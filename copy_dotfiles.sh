@@ -21,7 +21,7 @@ function copy()
 copy hypr
 copy kitty
 copy wofi
-copy waybar
+copy quickshell
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
 
