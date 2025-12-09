@@ -4,6 +4,8 @@
 
 ---
 
+![Boot Screenshot](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/head/main/assets/screenshot.png)
+
 Configuration files for my Arch Linux setup
 
 ## Dependencies
@@ -14,8 +16,8 @@ Configuration files for my Arch Linux setup
 - `hyprlock`
 - `hypridle`
 - `hyprshot`
+- `hyprsunset`
 - `kitty`
-- `waybar`
 - `wofi`
 - `nemo`
 - `btop`
@@ -29,6 +31,7 @@ Configuration files for my Arch Linux setup
 - `ttf-dejavu`
 - `fastfetch`
 - `dunst`
+- `quickshell`
 - `nerd-fonts`
 - `blueman`
 - `zen-browser-bin`

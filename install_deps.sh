@@ -5,7 +5,7 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --noconfirm gcc hyprland hyprpaper hyprlock hypridle hyprshot kitty wofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone spotify-launcher python ttf-dejavu fastfetch
+sudo pacman -S --noconfirm gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset kitty wofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone spotify-launcher python ttf-dejavu fastfetch
 
 if ! command -v yay >/dev/null; then
     mkdir -p $HOME/tmp
