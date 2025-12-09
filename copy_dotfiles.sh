@@ -15,7 +15,7 @@ function copy()
     fi
 
     mkdir -p "$dest"
-    cp -r "$src/"* "$dest/" 2>/dev/null
+    cp -r "$src/." "$dest/" 2>/dev/null
 }
 
 copy hypr
@@ -25,4 +25,4 @@ copy quickshell
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
 
-# source ~/.bashrc
+source ~/.bashrc
