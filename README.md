@@ -4,7 +4,7 @@
 
 ---
 
-![Boot Screenshot](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/head/main/assets/screenshot.png)
+![Boot Screenshot](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshot.png)
 
 Configuration files for my Arch Linux setup
 

@@ -102,7 +102,7 @@ PanelWindow {
               }
             }
             implicitWidth: 150
-            implicitHeight: 160
+            implicitHeight: 110
           }
 
           Rectangle {
