@@ -16,7 +16,7 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S dunst quickshell nerd-fonts blueman zen-browser-bin
+yay -S dunst quickshell nerd-fonts blueman zen-browser-bin hblock
 
 if ! command -v ollama >/dev/null; then
     cd $HOME

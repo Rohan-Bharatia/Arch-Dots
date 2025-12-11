@@ -35,6 +35,7 @@ Configuration files for my Arch Linux setup
 - `nerd-fonts`
 - `blueman`
 - `zen-browser-bin`
+- `hblock`
 - `ollama`
 - `wpilib-2025.3.2`
 
