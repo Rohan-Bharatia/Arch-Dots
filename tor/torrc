@@ -1,0 +1,7 @@
+User tor
+Log notice syslog
+DataDirectory /var/lib/tor
+
+IsolateDestAddr 1
+IsolateDestPort 1
+IsolateSOCKSAuth 1

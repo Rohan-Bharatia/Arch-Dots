@@ -19,12 +19,21 @@ function copy()
 }
 
 copy hblock "/etc/systemd/system"
+copy tor "/etc/tor"
 copy hypr
 copy kitty
 copy wofi
 copy quickshell
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
+
+# A manual wireguard configuration install is required for security reasons
+sudo wg-quick up /etc/wireguard/mullvad.conf 2>/dev/null
+sudo systemctl enable --now tor.service
+
+sudo iptables -t nat -A OUTPUT -m owner --uid-owner $USER -d 127.0.0.1/8 -j RETURN
+sudo iptables -t nat -A OUTPUT -m owner --uid-owner $USER -d 192.168.0.0/16 -j RETURN
+sudo iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner $USER -j REDIRECT --to-ports 9050
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer

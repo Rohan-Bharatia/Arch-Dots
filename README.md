@@ -28,6 +28,9 @@ Configuration files for my Arch Linux setup
 - `rclone`
 - `spotify-launcher`
 - `python`
+- `tor`
+- `wireguard-tools`
+- `openresolv`
 - `ttf-dejavu`
 - `fastfetch`
 - `dunst`
