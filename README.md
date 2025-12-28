@@ -31,6 +31,8 @@ Configuration files for my Arch Linux setup
 - `tor`
 - `wireguard-tools`
 - `openresolv`
+- `fzf`
+- `nvim`
 - `ttf-dejavu`
 - `fastfetch`
 - `dunst`

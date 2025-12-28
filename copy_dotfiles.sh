@@ -24,6 +24,7 @@ copy hypr
 copy kitty
 copy wofi
 copy quickshell
+copy nvim
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
 
