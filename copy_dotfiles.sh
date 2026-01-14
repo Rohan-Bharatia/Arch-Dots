@@ -32,6 +32,7 @@ copy fastfetch
 copy xsettingsd
 copy yazi
 copy zathura
+copy autostart
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
 

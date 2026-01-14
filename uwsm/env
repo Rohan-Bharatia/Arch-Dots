@@ -30,5 +30,4 @@ export __GL_SHADER_DISK_CACHE=1
 export __GL_SHADER_DISK_CACHE_PATH=$HOME/.cache/nv/
 export WLR_NO_HARDWARE_CURSORS=1
 export LIBVIRT_DEFAULT_URI='qemu:///system'
-export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/intel_icd.x86_64.json
 export __NV_PRIME_RENDERER_OFFLOAD=1

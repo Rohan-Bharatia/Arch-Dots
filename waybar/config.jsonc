@@ -38,7 +38,7 @@
   "tray": {
     "icon-size": 18,
     "show-passive-items": true,
-    "spacing": 3, 
+    "spacing": 3,
     "rotate": 90
   },
   "battery": {
