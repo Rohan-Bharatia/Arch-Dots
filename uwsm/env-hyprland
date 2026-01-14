@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export DESKTOP_SESSION=hyprland-uwsm
+export HYPRCURSOR_SIZE=18
+export AQ_DRM_DEVICES=/dev/dri/card1
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export TERMINAL=xdg-terminal-exec

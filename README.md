@@ -8,42 +8,6 @@
 
 Configuration files for my Arch Linux setup
 
-## Dependencies
-
-- `gcc`
-- `hyprland`
-- `hyprpaper`
-- `hyprlock`
-- `hypridle`
-- `hyprshot`
-- `hyprsunset`
-- `kitty`
-- `wofi`
-- `nemo`
-- `btop`
-- `pipewire`
-- `playerctl`
-- `gtk3`
-- `pavucontrol`
-- `rclone`
-- `spotify-launcher`
-- `python`
-- `tor`
-- `wireguard-tools`
-- `openresolv`
-- `fzf`
-- `nvim`
-- `ttf-dejavu`
-- `fastfetch`
-- `dunst`
-- `quickshell`
-- `nerd-fonts`
-- `blueman`
-- `zen-browser-bin`
-- `hblock`
-- `ollama`
-- `wpilib-2025.3.2`
-
 1. Clone the git repository and travel to the specified directory (```~/Arch-Dots/```).
 
 2. Run the [```install_deps.sh```](https://github.com/Rohan-Bharatia/Arch-Dots/tree/main/install_deps.sh) file to install or update all the listed dependencies.
@@ -56,3 +20,7 @@ Configuration files for my Arch Linux setup
 
 > [!WARNING]
 > You may need to reboot your system to see many changes made in step 2
+
+## TODO
+
+- Write all of the user scripts
