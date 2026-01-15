@@ -6,6 +6,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
         local lcount = vim.api.nvim_buf_line_count(0)
         local ft = vim.bo.filetype
         local contains = vim.list_contains or vim.tbl_contains
+
         if not contains({ "gitcommit", "gitrebase" }, ft)
             and mark[1] > 0
             and mark[1] <= lcount
@@ -14,6 +15,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
         end
     end,
 })
+
 local highlight_yank_group = vim.api.nvim_create_augroup("HighlightYank", {})
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = highlight_yank_group,

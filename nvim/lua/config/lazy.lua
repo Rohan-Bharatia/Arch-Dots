@@ -13,6 +13,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     end
 end
 vim.opt.rtp:prepend(lazypath)
+
 require("config.options")
 require("config.globals")
 require("config.keymaps")
@@ -23,6 +24,11 @@ require("lazy").setup({
         hererocks = false,
     },
     spec = {
+        { "LazyVim/LazyVim",                                     import = "lazyvim.plugins" },
+        { import = "lazyvim.plugins.extras.editor.snacks_picker" },
+        { import = "lazyvim.plugins.extras.lang.typescript" },
+        { import = "lazyvim.plugins.extras.lang.json" },
+        { import = "lazyvim.plugins.extras.coding.nvim-cmp" },
         { import = "plugins" },
     },
     rtp = {

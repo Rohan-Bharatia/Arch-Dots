@@ -1,6 +1,6 @@
 return {
     {
-        "echasnovski/mini.base16",
+        "nvim-mini/mini.base16",
         lazy = false,
         priority = 1000,
         config = function()
@@ -21,18 +21,15 @@ return {
                 base0C = "#94e2d5",
                 base0D = "#89b4fa",
                 base0E = "#cba6f7",
-                base0F = "#f2cdcd"
+                base0F = "#f2cdcd",
             }
             local function load_theme()
                 if vim.uv.fs_stat(matugen_path) then
                     local ok, err = pcall(dofile, matugen_path)
                     if not ok then
-                        vim.notify("Matugen Load Error: " .. err, vim.log.levels.ERROR)
+                        vim.notify("Matugen load error: " .. err, vim.log.levels.ERROR)
                         require("base16-colorscheme").setup(default_colors)
                     end
-                else
-                    vim.notify("Matugen colors not found. Using safe defaults.", vim.log.levels.WARN)
-                    require("base16-colorscheme").setup(default_colors)
                 end
             end
             load_theme()
