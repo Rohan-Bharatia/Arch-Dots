@@ -12,15 +12,16 @@ Configuration files for my Arch Linux setup
 
 2. Run the [```install_deps.sh```](https://github.com/Rohan-Bharatia/Arch-Dots/tree/main/install_deps.sh) file to install or update all the listed dependencies.
 > [!NOTE]
-> Run the install script with the `--install-wpilib` tag to install all linux compatible FRC 2025 WPILib tools
+> Run the install script with the `--wpilib` tag to install all linux compatible FRC 2025 WPILib tools
 
 3. Run the [```copy_dotfiles.sh```](https://github.com/Rohan-Bharatia/Arch-Dots/tree/main/copy_dotfiles.sh) file to run the dotfiles from the repository directory to the ```~/.config/``` directory.
 
 4. Enjoy! :)
 
-> [!WARNING]
-> You may need to reboot your system to see many changes made in step 2
+> [!NOTE]
+> You will need to reboot your system to see many changes made in step 2
 
 ## TODO
 
-- Write all of the user scripts
+- Fix the nvim config
+- Write the TTS/STT user scripts

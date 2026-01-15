@@ -33,7 +33,14 @@ rclone config
 for "$arg" in "$@"; do
     case "$arg" in
         --wpilib)
-            sudo ./install_wpilib.sh
+            local url="https://packages.wpilib.workers.dev/installer/v2025.3.2/Linux/WPILib_Linux-2025.3.2.tar.gz"
+	    local tar="$HOME/WPILib_Linux-2025.3.2.tar.gz"
+	    local dir="$HOME/WPILib_Linux-2025.3.2"
+	    curl -L "$url" -o "$tar"
+	    tar -xzf "$tar"
+	    cd "$dir"
+	    ./WPILibInstaller
+	    cd "$HOME"
             ;;
         *)
             ;;
