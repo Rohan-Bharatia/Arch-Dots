@@ -35,6 +35,7 @@ copy zathura
 copy autostart
 copy bash "$HOME"
 copy assets "$HOME/Pictures"
+copy scripts "$HOME/.user_scripts"
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer

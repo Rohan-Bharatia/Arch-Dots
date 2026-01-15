@@ -5,13 +5,11 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone spotify-launcher python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww
+sudo pacman -S --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone spotify-launcher python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl
 
 hpyrpm update
 hyprpm add https://github.com/hyprwm/hyprland-plugins
 hyprpm enable hyprexpo
-
-sudo pip install faster-whisper --break-system-package
 
 if ! command -v yay >/dev/null; then
     mkdir -p $HOME/tmp
@@ -22,7 +20,7 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade
+yay -S nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui
 
 if ! command -v ollama >/dev/null; then
     cd $HOME
