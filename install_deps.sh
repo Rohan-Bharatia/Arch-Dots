@@ -5,7 +5,7 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils
+sudo pacman -S --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip
 
 hyprpm update
 hyprpm add https://github.com/hyprwm/hyprland-plugins
@@ -19,12 +19,23 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify
+yay -S nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli
 
 if ! command -v ollama >/dev/null; then
     cd $HOME
     curl -fsSL https://ollama.com/install.sh | sh
 fi
+
+sudo chown -R $USER:$USER /opt/spotify
+spicetify
+spicetify backup apply enable-devtools
+spicetify config current_theme Comfy color_scheme Comfy
+spicetify config extensions fullAppDisplay.js
+spicetify config extensions keyboardShortcut.js
+spicetify config extensions shuffle+.js
+spicetify config extensions popupLyrics.js
+spicetify config extensions autoSkipVideo.js
+spicetify apply -n
 
 ollama pull phi3:mini
 rclone config
