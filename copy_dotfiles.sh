@@ -17,25 +17,33 @@ function copy() {
     sudo cp -r "$src/." "$dest/" 2>/dev/null
 }
 
-copy matugen
+copy assets "$HOME/Pictures"
+copy autostart
+copy bash "$HOME"
+copy btop
+copy cava
+copy fastfetch
+copy fontconfig
+copy gtk-3.0
+copy gtk-4.0
 copy hblock "/etc/systemd/system"
 copy hypr
-copy uwsm
-copy waypaper
 copy kitty
-copy rofi
-copy waybar
+copy matugen
 copy nvim
+copy qt5ct
+copy qt6ct
+copy rofi
+copy scripts "$HOME/.user_scripts"
 copy swaync
 copy swayosd
-copy fastfetch
+copy systemd
+copy uwsm
+copy waybar
+copy waypaper
 copy xsettingsd
 copy yazi
 copy zathura
-copy autostart
-copy bash "$HOME"
-copy assets "$HOME/Pictures"
-copy scripts "$HOME/.user_scripts"
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
