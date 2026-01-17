@@ -23,5 +23,4 @@ Configuration files for my Arch Linux setup
 
 ## TODO
 
-- Fix the nvim config
-- Write the TTS/STT user scripts
+- Write missing user scripts

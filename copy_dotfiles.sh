@@ -30,11 +30,14 @@ copy hblock "/etc/systemd/system"
 copy hypr
 copy kitty
 copy matugen
+copy xdg "$HOME/.config"
 copy nvim
+copy pam "/etc/pam.d"
 copy qt5ct
 copy qt6ct
 copy rofi
 copy scripts "$HOME/.user_scripts"
+copy starship "$HOME/.config"
 copy swaync
 copy swayosd
 copy systemd
@@ -47,5 +50,8 @@ copy zathura
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
+
+hyprpm enable hyprexpo
+hyprpm reload
 
 source ~/.bashrc
