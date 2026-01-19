@@ -46,6 +46,8 @@ copy xsettingsd
 copy yazi
 copy zathura
 
+sudo chmod +x $HOME/.user_scripts/**/*.sh
+
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
 sudo systemctl start ollama
