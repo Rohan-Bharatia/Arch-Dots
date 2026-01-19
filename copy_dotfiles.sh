@@ -46,7 +46,6 @@ copy yazi
 copy zathura
 copy zsh "$HOME"
 
-chsh -s $(which zsh)
 sudo chmod +x $HOME/.user_scripts/**/*.sh
 
 sudo systemctl daemon-reload
@@ -57,4 +56,4 @@ sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
 hyprpm enable hyprexpo
 hyprpm reload
 
-source ~/.bashrc
+source ~/.zshrc
