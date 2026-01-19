@@ -4,8 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 3))); then
-    printf 'Error: This script requires bash 4.3 or higher (found %s)\n' "$BASH_VERSION" >&2
+if ((zsh_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 3))); then
+    printf 'Error: This script requires zsh 4.3 or higher (found %s)\n' "$BASH_VERSION" >&2
     exit 1
 fi
 
@@ -87,19 +87,19 @@ is_active() {
     local name="$1"
     local type="$2"
     case "$type" in
-        proc)
-            pgrep -x "$name" &>/dev/null
-            ;;
-        sys)
-            systemctl is-active --quiet "$name" 2>/dev/null
-            ;;
-        user)
-            systemctl --user is-active --quiet "$name" 2>/dev/null
-            ;;
-        *)
-            printf 'Warning: Unknown type "%s" in is_active()\n' "$type" >&2
-            return 1
-            ;;
+    proc)
+        pgrep -x "$name" &>/dev/null
+        ;;
+    sys)
+        systemctl is-active --quiet "$name" 2>/dev/null
+        ;;
+    user)
+        systemctl --user is-active --quiet "$name" 2>/dev/null
+        ;;
+    *)
+        printf 'Warning: Unknown type "%s" in is_active()\n' "$type" >&2
+        return 1
+        ;;
     esac
 }
 
@@ -121,18 +121,18 @@ is_default_item() {
     local name="$1"
     local type="$2"
     case "$type" in
-        proc)
-            contains_element "$name" "${DEFAULT_PROCESSES[@]}"
-            ;;
-        sys)
-            contains_element "$name" "${DEFAULT_SYSTEM_SERVICES[@]}"
-            ;;
-        user)
-            contains_element "$name" "${DEFAULT_USER_SERVICES[@]}"
-            ;;
-        *)
-            return 1
-            ;;
+    proc)
+        contains_element "$name" "${DEFAULT_PROCESSES[@]}"
+        ;;
+    sys)
+        contains_element "$name" "${DEFAULT_SYSTEM_SERVICES[@]}"
+        ;;
+    user)
+        contains_element "$name" "${DEFAULT_USER_SERVICES[@]}"
+        ;;
+    *)
+        return 1
+        ;;
     esac
 }
 
@@ -141,37 +141,37 @@ perform_stop() {
     local name="$2"
     local i
     case "$type" in
-        proc)
-            pkill -x "$name" 2>/dev/null || true
-            for i in {1..20}; do
-                is_active "$name" "proc" || return 0
-                sleep 0.1
-            done
-            pkill -9 -x "$name" 2>/dev/null || true
-            sleep 0.3
-            ! is_active "$name" "proc"
-            ;;
-        sys)
-            if ! sudo systemctl stop "$name" 2>/dev/null; then
-                if ! systemctl list-unit-files "$name" &>/dev/null; then
-                    printf 'Warning: Unit %s not found\n' "$name" >&2
-                fi
-                return 1
+    proc)
+        pkill -x "$name" 2>/dev/null || true
+        for i in {1..20}; do
+            is_active "$name" "proc" || return 0
+            sleep 0.1
+        done
+        pkill -9 -x "$name" 2>/dev/null || true
+        sleep 0.3
+        ! is_active "$name" "proc"
+        ;;
+    sys)
+        if ! sudo systemctl stop "$name" 2>/dev/null; then
+            if ! systemctl list-unit-files "$name" &>/dev/null; then
+                printf 'Warning: Unit %s not found\n' "$name" >&2
             fi
-            sleep 0.2
-            ! is_active "$name" "sys"
-            ;;
-        user)
-            if ! systemctl --user stop "$name" 2>/dev/null; then
-                return 1
-            fi
-            sleep 0.2
-            ! is_active "$name" "user"
-            ;;
-        *)
-            printf 'Error: Unknown type "%s" in perform_stop()\n' "$type" >&2
             return 1
-            ;;
+        fi
+        sleep 0.2
+        ! is_active "$name" "sys"
+        ;;
+    user)
+        if ! systemctl --user stop "$name" 2>/dev/null; then
+            return 1
+        fi
+        sleep 0.2
+        ! is_active "$name" "user"
+        ;;
+    *)
+        printf 'Error: Unknown type "%s" in perform_stop()\n' "$type" >&2
+        return 1
+        ;;
     esac
 }
 
@@ -182,7 +182,7 @@ if [[ ${#CANDIDATES[@]} -eq 0 ]]; then
         "All monitored services/processes are already inactive."
     printf '\n'
     trap - ERR EXIT
-    exec "${SHELL:-/bin/bash}"
+    exec "${SHELL:-/bin/zsh}"
 fi
 
 declare -a SELECTED_ITEMS=()
@@ -214,7 +214,10 @@ else
     done
     PRE_SELECTED_STR=""
     if [[ ${#PRE_SELECTED_DISPLAY[@]} -gt 0 ]]; then
-        PRE_SELECTED_STR=$(IFS=,; printf '%s' "${PRE_SELECTED_DISPLAY[*]}")
+        PRE_SELECTED_STR=$(
+            IFS=,
+            printf '%s' "${PRE_SELECTED_DISPLAY[*]}"
+        )
     fi
     gum style --border double --padding "1 2" --border-foreground 57 \
         "Performance Terminator"
@@ -232,12 +235,12 @@ else
         if [[ -n "$line" ]]; then
             SELECTED_ITEMS+=("${DATA_MAP[$line]}")
         fi
-    done <<< "$SELECTION_RESULT"
+    done <<<"$SELECTION_RESULT"
 fi
 if [[ ${#SELECTED_ITEMS[@]} -eq 0 ]]; then
     printf 'No items selected.\n'
     trap - ERR EXIT
-    exec "${SHELL:-/bin/bash}"
+    exec "${SHELL:-/bin/zsh}"
 fi
 NEEDS_SUDO=false
 for item in "${SELECTED_ITEMS[@]}"; do
@@ -292,4 +295,4 @@ printf '%b' "$REPORT"
 trap - ERR EXIT
 printf '%s\n' "-----------------------------------------------------"
 printf '%s\n' "Session Active. Type 'exit' to close."
-exec "${SHELL:-/bin/bash}"
+exec "${SHELL:-/bin/zsh}"

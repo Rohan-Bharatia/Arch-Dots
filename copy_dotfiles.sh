@@ -16,7 +16,6 @@ function copy() {
 
 copy assets "$HOME/Pictures"
 copy autostart
-copy bash "$HOME"
 copy btop
 copy cava
 copy fastfetch
@@ -45,7 +44,9 @@ copy wlogout
 copy xsettingsd
 copy yazi
 copy zathura
+copy zsh "$HOME"
 
+chsh -s $(which zsh)
 sudo chmod +x $HOME/.user_scripts/**/*.sh
 
 sudo systemctl daemon-reload

@@ -48,7 +48,7 @@ check_networkmanager() {
 
 cleanup() {
     local -ri exit_code="${1:-$?}"
-    tput cnorm 2>/dev/null || true  # Show cursor
+    tput cnorm 2>/dev/null || true # Show cursor
     jobs -p | xargs -r kill 2>/dev/null || true
     exit "$exit_code"
 }
@@ -106,7 +106,7 @@ load_saved_connections() {
         line="${line%:802-11-wireless}"
         if ((${#line} >= 37)); then
             uuid="${line: -36}"
-            name="${line:0:$((${#line} - 37))}"  # Everything before ":UUID"
+            name="${line:0:$((${#line} - 37))}" # Everything before ":UUID"
             if [[ -n "$name" && "$uuid" =~ ^[a-f0-9-]{36}$ ]]; then
                 SAVED_CONNS["$name"]="$uuid"
             fi
@@ -128,7 +128,7 @@ get_active_wifi_name() {
 }
 
 get_active_ssid() {
-    nmcli -t -f active,ssid device wifi list 2>/dev/null | \
+    nmcli -t -f active,ssid device wifi list 2>/dev/null |
         awk -F: '$1 == "yes" { print $2; exit }'
 }
 
@@ -139,19 +139,19 @@ get_radio_status() {
 scan_networks() {
     local rescan="${1:-yes}"
     nmcli -t -f IN-USE,SSID,SECURITY,SIGNAL,BARS device wifi list \
-        ${rescan:+--rescan "$rescan"} 2>/dev/null | \
-    while IFS=: read -r in_use rest; do
-        local bars signal security ssid
-        bars="${rest##*:}"
-        rest="${rest%:*}"
-        signal="${rest##*:}"
-        rest="${rest%:*}"
-        security="${rest##*:}"
-        rest="${rest%:*}"
-        ssid="$rest"
-        [[ -z "$ssid" ]] && continue
-        printf '%s|%s|%s|%s|%s\n' "$in_use" "$ssid" "$security" "$signal" "$bars"
-    done
+        ${rescan:+--rescan "$rescan"} 2>/dev/null |
+        while IFS=: read -r in_use rest; do
+            local bars signal security ssid
+            bars="${rest##*:}"
+            rest="${rest%:*}"
+            signal="${rest##*:}"
+            rest="${rest%:*}"
+            security="${rest##*:}"
+            rest="${rest%:*}"
+            ssid="$rest"
+            [[ -z "$ssid" ]] && continue
+            printf '%s|%s|%s|%s|%s\n' "$in_use" "$ssid" "$security" "$signal" "$bars"
+        done
 }
 
 connect_to_network() {
@@ -174,7 +174,7 @@ connect_saved_network() {
 
 disconnect_network() {
     local -r identifier="${1:?Identifier required}"
-    local -r id_type="${2:-uuid}"  # "uuid" or "id"
+    local -r id_type="${2:-uuid}" # "uuid" or "id"
     nmcli connection down "$id_type" "$identifier" &>/dev/null
 }
 
@@ -188,26 +188,26 @@ toggle_radio() {
     local state
     state=$(get_radio_status)
     case "$state" in
-        enabled)
-            if gum confirm "Turn Wi-Fi OFF?"; then
-                gum spin --spinner dot --title "Disabling radio..." -- \
-                    nmcli radio wifi off
-                style_msg "$C_ERROR" "睊 Wi-Fi Disabled"
-                notify "Wi-Fi" "Radio disabled"
-                sleep 1
-            fi
-            ;;
-        disabled)
-            gum spin --spinner dot --title "Enabling radio..." -- \
-                nmcli radio wifi on
-            style_msg "$C_SUCCESS" " Wi-Fi Enabled"
-            notify "Wi-Fi" "Radio enabled"
-            sleep 2
-            ;;
-        *)
-            style_msg "$C_ERROR" "⚠ Unable to determine radio state"
+    enabled)
+        if gum confirm "Turn Wi-Fi OFF?"; then
+            gum spin --spinner dot --title "Disabling radio..." -- \
+                nmcli radio wifi off
+            style_msg "$C_ERROR" "睊 Wi-Fi Disabled"
+            notify "Wi-Fi" "Radio disabled"
             sleep 1
-            ;;
+        fi
+        ;;
+    disabled)
+        gum spin --spinner dot --title "Enabling radio..." -- \
+            nmcli radio wifi on
+        style_msg "$C_SUCCESS" " Wi-Fi Enabled"
+        notify "Wi-Fi" "Radio enabled"
+        sleep 2
+        ;;
+    *)
+        style_msg "$C_ERROR" "⚠ Unable to determine radio state"
+        sleep 1
+        ;;
     esac
 }
 
@@ -221,7 +221,7 @@ scan_and_connect() {
         active_ssid=$(get_active_ssid) || active_ssid=""
         local -a raw_ssids=()
         local -a display_lines=()
-        local -A seen_ssids=()  # Proper deduplication
+        local -A seen_ssids=() # Proper deduplication
         local line in_use ssid security signal bars
         local icon state color
         while IFS='|' read -r in_use ssid security signal bars; do
@@ -301,70 +301,72 @@ handle_network_action() {
     local -r active_ssid="${3:-}"
     local action
     if [[ "$ssid" == "$active_ssid" ]]; then
-        action=$(gum choose \
-            --header "󰤨 Managing: $ssid (Active)" \
-            --cursor.foreground "$C_PRIMARY" \
-            "Disconnect" \
-            "Forget Network" \
-            "Cancel"
+        action=$(
+            gum choose \
+                --header "󰤨 Managing: $ssid (Active)" \
+                --cursor.foreground "$C_PRIMARY" \
+                "Disconnect" \
+                "Forget Network" \
+                "Cancel"
         ) || return
         case "$action" in
-            "Disconnect")
-                style_header
+        "Disconnect")
+            style_header
+            if [[ -n "$uuid" ]]; then
+                gum spin --spinner dot --title "Disconnecting..." -- \
+                    nmcli connection down uuid "$uuid"
+            else
+                gum spin --spinner dot --title "Disconnecting..." -- \
+                    nmcli connection down id "$ssid"
+            fi
+            style_msg "$C_SUCCESS" "" "Disconnected from $ssid"
+            notify "Wi-Fi" "Disconnected from $ssid"
+            sleep 1
+            ;;
+        "Forget Network")
+            if gum confirm --affirmative "Delete" --negative "Keep" \
+                "Permanently delete saved profile for '$ssid'?"; then
                 if [[ -n "$uuid" ]]; then
-                    gum spin --spinner dot --title "Disconnecting..." -- \
-                        nmcli connection down uuid "$uuid"
+                    forget_network "$uuid" "uuid"
                 else
-                    gum spin --spinner dot --title "Disconnecting..." -- \
-                        nmcli connection down id "$ssid"
+                    forget_network "$ssid" "id"
                 fi
-                style_msg "$C_SUCCESS" "" "Disconnected from $ssid"
-                notify "Wi-Fi" "Disconnected from $ssid"
+                style_msg "$C_SUCCESS" "" "Network profile deleted"
+                notify "Wi-Fi" "Forgot $ssid"
                 sleep 1
-                ;;
-            "Forget Network")
-                if gum confirm --affirmative "Delete" --negative "Keep" \
-                    "Permanently delete saved profile for '$ssid'?"; then
-                    if [[ -n "$uuid" ]]; then
-                        forget_network "$uuid" "uuid"
-                    else
-                        forget_network "$ssid" "id"
-                    fi
-                    style_msg "$C_SUCCESS" "" "Network profile deleted"
-                    notify "Wi-Fi" "Forgot $ssid"
-                    sleep 1
-                fi
-                ;;
+            fi
+            ;;
         esac
         return
     fi
     if [[ -n "$uuid" ]]; then
-        action=$(gum choose \
-            --header "󰤨 Managing: $ssid (Saved)" \
-            --cursor.foreground "$C_PRIMARY" \
-            "Connect" \
-            "Forget Network" \
-            "Cancel"
+        action=$(
+            gum choose \
+                --header "󰤨 Managing: $ssid (Saved)" \
+                --cursor.foreground "$C_PRIMARY" \
+                "Connect" \
+                "Forget Network" \
+                "Cancel"
         ) || return
         case "$action" in
-            "Connect")
-                style_header
-                gum style --foreground "$C_SECONDARY" " Connecting to $ssid..."
-                if gum spin --spinner dot --title "Authenticating..." -- \
-                    nmcli connection up uuid "$uuid"; then
-                    style_msg "$C_SUCCESS" "" "Connected to $ssid"
-                    notify "Wi-Fi" "Connected to $ssid"
-                else
-                    style_msg "$C_ERROR" "" "Connection failed"
-                    notify "Wi-Fi" "Failed to connect to $ssid"
-                fi
-                sleep 1
-                ;;
-            "Forget Network")
-                forget_network "$uuid" "uuid"
-                style_msg "$C_SUCCESS" "" "Network profile deleted"
-                sleep 1
-                ;;
+        "Connect")
+            style_header
+            gum style --foreground "$C_SECONDARY" " Connecting to $ssid..."
+            if gum spin --spinner dot --title "Authenticating..." -- \
+                nmcli connection up uuid "$uuid"; then
+                style_msg "$C_SUCCESS" "" "Connected to $ssid"
+                notify "Wi-Fi" "Connected to $ssid"
+            else
+                style_msg "$C_ERROR" "" "Connection failed"
+                notify "Wi-Fi" "Failed to connect to $ssid"
+            fi
+            sleep 1
+            ;;
+        "Forget Network")
+            forget_network "$uuid" "uuid"
+            style_msg "$C_SUCCESS" "" "Network profile deleted"
+            sleep 1
+            ;;
         esac
         return
     fi
@@ -372,17 +374,18 @@ handle_network_action() {
     gum style --foreground "$C_ACCENT" " New Network: $ssid"
     echo
     local password=""
-    password=$(gum input \
-        --password \
-        --width 40 \
-        --placeholder "Enter password (empty for open network)..." \
-        --header "Authentication Required"
+    password=$(
+        gum input \
+            --password \
+            --width 40 \
+            --placeholder "Enter password (empty for open network)..." \
+            --header "Authentication Required"
     ) || return
     style_header
     gum style --foreground "$C_SECONDARY" " Connecting to $ssid..."
     local connect_status
     if gum spin --spinner dot --title "Negotiating connection..." -- \
-        bash -c 'nmcli device wifi connect "$1" ${2:+password "$2"}' -- "$ssid" "$password"; then
+        zsh -c 'nmcli device wifi connect "$1" ${2:+password "$2"}' -- "$ssid" "$password"; then
         connect_status=0
     else
         connect_status=1
@@ -425,32 +428,33 @@ main_menu() {
         style_header
         show_status_dashboard
         radio_status=$(get_radio_status)
-        choice=$(gum choose \
-            --cursor-prefix "➜ " \
-            --cursor.foreground "$C_PRIMARY" \
-            --header "Select an option:" \
-            " Scan Networks" \
-            "󰖩 Toggle Radio" \
-            " Exit"
+        choice=$(
+            gum choose \
+                --cursor-prefix "➜ " \
+                --cursor.foreground "$C_PRIMARY" \
+                --header "Select an option:" \
+                " Scan Networks" \
+                "󰖩 Toggle Radio" \
+                " Exit"
         ) || break
         case "$choice" in
-            *"Scan Networks"*)
-                if [[ "$radio_status" == "disabled" ]]; then
-                    style_msg "$C_ERROR" "⚠" "Wi-Fi radio is disabled. Enable it first."
-                    sleep 1.5
-                else
-                    scan_and_connect
-                fi
-                ;;
-            *"Toggle Radio"*)
-                toggle_radio
-                ;;
-            *"Exit"*)
-                break
-                ;;
-            "")
-                break
-                ;;
+        *"Scan Networks"*)
+            if [[ "$radio_status" == "disabled" ]]; then
+                style_msg "$C_ERROR" "⚠" "Wi-Fi radio is disabled. Enable it first."
+                sleep 1.5
+            else
+                scan_and_connect
+            fi
+            ;;
+        *"Toggle Radio"*)
+            toggle_radio
+            ;;
+        *"Exit"*)
+            break
+            ;;
+        "")
+            break
+            ;;
         esac
     done
 }

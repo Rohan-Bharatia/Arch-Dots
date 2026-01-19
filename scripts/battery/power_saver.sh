@@ -2,14 +2,14 @@
 
 set -uo pipefail
 
-if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4))); then
-    printf 'Error: Bash 4.4+ required (found %s)\n' "${BASH_VERSION}" >&2
+if ((ZSH_VERSINFO[0] < 4 || (ZSH_VERSINFO[0] == 4 && ZSH_VERSINFO[1] < 4))); then
+    printf 'Error: ZSH 4.4+ required (found %s)\n' "${ZSH_VERSION}" >&2
     exit 1
 fi
 
 readonly BRIGHTNESS_LEVEL="1%"
 readonly VOLUME_CAP="50"
-readonly SUDO_REFRESH_INTERVAL=60  # Refresh sudo every N seconds to prevent timeout
+readonly SUDO_REFRESH_INTERVAL=60 # Refresh sudo every N seconds to prevent timeout
 readonly BLUR_SCRIPT="${HOME}/user_scripts/hypr/hypr_blur_opacity_shadow_toggle.sh"
 readonly THEME_SCRIPT="${HOME}/user_scripts/theme_matugen/matugen_config.sh"
 readonly TERMINATOR_SCRIPT="${HOME}/user_scripts/battery/process_terminator.sh"
@@ -166,14 +166,14 @@ disable_visual_effects() {
 cleanup_user_processes() {
     echo
     spin_exec "Cleaning up resource monitors..." \
-        bash -c 'pkill -x btop 2>/dev/null; pkill -x nvtop 2>/dev/null; exit 0'
+        zsh -c 'pkill -x btop 2>/dev/null; pkill -x nvtop 2>/dev/null; exit 0'
     if has_cmd playerctl; then
         run_quiet playerctl -a pause
     fi
     log_step "Resource monitors killed & media paused."
     if has_cmd warp-cli; then
         spin_exec "Disconnecting Warp..." \
-            bash -c 'warp-cli disconnect &>/dev/null || true'
+            zsh -c 'warp-cli disconnect &>/dev/null || true'
         log_step "Warp disconnected."
     fi
 }
@@ -204,12 +204,12 @@ disable_animations() {
         return
     fi
     spin_exec "Disabling animations & reloading Hyprland..." \
-        bash -c 'ln -nfs "$1" "$2" && hyprctl reload' _ "${ANIM_SOURCE}" "${ANIM_TARGET}"
+        zsh -c 'ln -nfs "$1" "$2" && hyprctl reload' _ "${ANIM_SOURCE}" "${ANIM_TARGET}"
     log_step "Hyprland animations disabled."
 }
 
 apply_asus_profile() {
-    run_script "${ASUS_PROFILE_SCRIPT}" "Applying Quiet Profile & KB Lights..." && \
+    run_script "${ASUS_PROFILE_SCRIPT}" "Applying Quiet Profile & KB Lights..." &&
         log_step "ASUS Quiet profile & lighting applied."
 }
 
@@ -266,7 +266,7 @@ cap_volume() {
         log_warn "Could not query audio sink."
         return
     fi
-    current_vol=$(awk '{printf "%.0f", $2 * 100}' <<< "${raw_output}") || current_vol=""
+    current_vol=$(awk '{printf "%.0f", $2 * 100}' <<<"${raw_output}") || current_vol=""
     if ! is_numeric "${current_vol}"; then
         log_warn "Could not parse volume level from: ${raw_output}"
         return

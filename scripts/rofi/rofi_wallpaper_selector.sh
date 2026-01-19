@@ -48,7 +48,7 @@ cleanup_orphans() {
         filename=$(basename "$thumb")
         [[ "$filename" == "_placeholder.png" ]] && continue
         if ! grep -q "^${filename%.png}" "$PATH_MAP" 2>/dev/null; then
-             rm -f "$thumb"
+            rm -f "$thumb"
         fi
     done
 }
@@ -59,9 +59,9 @@ refresh_cache() {
     find "$WALLPAPER_DIR" -type f \( \
         -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \
         -o -iname "*.webp" -o -iname "*.gif" \
-    \) -print0 | xargs -0 -P "$MAX_JOBS" -I {} bash -c 'generate_single_thumb "$@"' _ {}
-    : > "$CACHE_FILE"
-    : > "$PATH_MAP"
+        \) -print0 | xargs -0 -P "$MAX_JOBS" -I {} zsh -c 'generate_single_thumb "$@"' _ {}
+    : >"$CACHE_FILE"
+    : >"$PATH_MAP"
     while IFS= read -r -d '' file; do
         filename=$(basename "$file")
         thumb="${CACHE_DIR}/${filename}.png"
@@ -70,13 +70,14 @@ refresh_cache() {
         else
             icon="$PLACEHOLDER_FILE"
         fi
-        printf '%s\0icon\x1f%s\n' "$filename" "$icon" >> "$CACHE_FILE"
-        printf '%s\t%s\n' "$filename" "$file" >> "$PATH_MAP"
+        printf '%s\0icon\x1f%s\n' "$filename" "$icon" >>"$CACHE_FILE"
+        printf '%s\t%s\n' "$filename" "$file" >>"$PATH_MAP"
     done < <(find "$WALLPAPER_DIR" -type f \( \
         -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \
         -o -iname "*.webp" -o -iname "*.gif" \
-    \) -print0 | sort -z)
-    ( cleanup_orphans ) & disown
+        \) -print0 | sort -z)
+    (cleanup_orphans) &
+    disown
 }
 
 get_matugen_flags() {
@@ -95,13 +96,14 @@ resolve_path() {
 if [[ ! -s "$CACHE_FILE" ]] || [[ "$WALLPAPER_DIR" -nt "$CACHE_FILE" ]]; then
     refresh_cache
 fi
-selection=$(rofi \
-    -dmenu \
-    -i \
-    -show-icons \
-    -theme "$ROFI_THEME" \
-    -p "Wallpaper" \
-    < "$CACHE_FILE"
+selection=$(
+    rofi \
+        -dmenu \
+        -i \
+        -show-icons \
+        -theme "$ROFI_THEME" \
+        -p "Wallpaper" \
+        <"$CACHE_FILE"
 )
 exit_code=$?
 if [[ $exit_code -ne 0 ]]; then

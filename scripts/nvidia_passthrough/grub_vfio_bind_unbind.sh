@@ -22,8 +22,8 @@ readonly BLUE=$'\033[34m'
 readonly RESET=$'\033[0m'
 
 if ((EUID != 0)); then
-   printf '%s[INFO]%s Script requires root privileges. Elevating...\n' "$YELLOW" "$RESET"
-   exec sudo bash "$(realpath "${BASH_SOURCE[0]}")" "$@"
+    printf '%s[INFO]%s Script requires root privileges. Elevating...\n' "$YELLOW" "$RESET"
+    exec sudo zsh "$(realpath "${ZSH_SOURCE[0]}")" "$@"
 fi
 
 log_info() {
@@ -33,7 +33,8 @@ log_success() {
     printf '%s[OK]%s %s\n' "$GREEN" "$RESET" "$1"
 }
 log_err() {
-    printf '%s[ERROR]%s %s\n' "$RED" "$RESET" "$1" >&2; exit 1
+    printf '%s[ERROR]%s %s\n' "$RED" "$RESET" "$1" >&2
+    exit 1
 }
 
 validate_boot_conf() {
@@ -63,10 +64,10 @@ apply_unbind() {
     clean_kernel_params
     log_success "Kernel parameters sanitized."
     log_info "Regenerating initramfs..."
-    mkinitcpio -P > /dev/null
+    mkinitcpio -P >/dev/null
     log_success "Initramfs rebuilt."
     log_info "Updating GRUB configuration..."
-    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null
+    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null
     log_success "GRUB config rebuilt."
     printf '\n%s%sSUCCESS: GPU Unbound from VFIO.%s\n' "$GREEN" "$BOLD" "$RESET"
     prompt_reboot
@@ -74,7 +75,7 @@ apply_unbind() {
 
 apply_bind() {
     log_info "Starting BIND process (Switching to VFIO Mode)..."
-    printf '%s\n' "$VFIO_CONF_CONTENT" > "$MODPROBE_CONF"
+    printf '%s\n' "$VFIO_CONF_CONTENT" >"$MODPROBE_CONF"
     log_success "Written configuration to $MODPROBE_CONF"
     clean_kernel_params
     log_info "Injecting VFIO parameters into GRUB..."
@@ -83,10 +84,10 @@ apply_bind() {
         "$BOOT_CONF"
     log_success "Kernel parameters updated."
     log_info "Regenerating initramfs..."
-    mkinitcpio -P > /dev/null
+    mkinitcpio -P >/dev/null
     log_success "Initramfs rebuilt."
     log_info "Updating GRUB configuration..."
-    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null
+    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null
     log_success "GRUB config rebuilt."
     printf '\n%s%sSUCCESS: GPU Bound to VFIO.%s\n' "$GREEN" "$BOLD" "$RESET"
     prompt_reboot
@@ -116,13 +117,13 @@ if [[ $# -eq 0 ]]; then
     usage
 fi
 case "$1" in
-    --bind)
-        apply_bind
-        ;;
-    --unbind)
-        apply_unbind
-        ;;
-    *)
-        log_err "Unknown argument: $1"
-        ;;
+--bind)
+    apply_bind
+    ;;
+--unbind)
+    apply_unbind
+    ;;
+*)
+    log_err "Unknown argument: $1"
+    ;;
 esac

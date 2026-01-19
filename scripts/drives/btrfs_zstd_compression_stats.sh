@@ -20,7 +20,7 @@ if [[ $EUID -ne 0 ]]; then
     printf "%b[PRIV]%b Root privileges needed for block analysis. Auto-escalating...\n" "$C_YELLOW" "$C_RESET"
     script_path=$(realpath -- "$0" 2>/dev/null || echo "$0")
     if command -v sudo &>/dev/null; then
-        exec sudo env PATH="$PATH" bash -- "$script_path" "$@"
+        exec sudo env PATH="$PATH" zsh -- "$script_path" "$@"
     else
         printf "%b[ERR]%b 'sudo' not found. Please run as root.\n" "$C_RED" "$C_RESET" >&2
         exit 1
@@ -69,7 +69,7 @@ printf "%s\n" "$output"
 printf "%s\n" "---------------------------------------------------------------"
 total_line=$(echo "$output" | grep "^TOTAL" || true)
 if [[ -n "$total_line" ]]; then
-    read -r _ ratio_str disk_str uncomp_str _ <<< "$total_line"
+    read -r _ ratio_str disk_str uncomp_str _ <<<"$total_line"
     ratio_val="${ratio_str%\%}"
     ratio_val="${ratio_val%%.*}"
     if [[ ! "$ratio_val" =~ ^[0-9]+$ ]]; then
@@ -78,7 +78,7 @@ if [[ -n "$total_line" ]]; then
     fi
     bytes_disk=$(numfmt --from=iec "$disk_str" 2>/dev/null || echo 0)
     bytes_uncomp=$(numfmt --from=iec "$uncomp_str" 2>/dev/null || echo 0)
-    bytes_saved=$(( bytes_uncomp - bytes_disk ))
+    bytes_saved=$((bytes_uncomp - bytes_disk))
     if [[ $bytes_saved -lt 0 ]]; then bytes_saved=0; fi
     human_saved=$(numfmt --to=iec "$bytes_saved" 2>/dev/null || echo "N/A")
     saved_val=$((100 - ratio_val))
