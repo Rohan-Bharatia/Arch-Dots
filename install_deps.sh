@@ -5,7 +5,7 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less nvidia-smi sentencepiece discord
+sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less nvidia-smi sentencepiece discord libpulse songrec
 
 if ! command -v yay >/dev/null; then
     mkdir -p $HOME/tmp
@@ -16,7 +16,7 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5
+yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout
 
 mkdir -p $HOME/.uv
 cd $HOME/.uv
@@ -96,7 +96,8 @@ hyprpm add https://github.com/hyprwm/hyprland-plugins
 
 if ! command -v ollama >/dev/null; then
     cd $HOME
-    curl -fsSL https://ollama.com/install.sh | sh
+    curl -LO https://ollama.com/download/ollama-linux-amd64.tgz
+    sudo tar -C /usr -xzf ollama-linux-amd64.tgz
 fi
 
 sudo chown -R $USER:$USER /opt/spotify
@@ -110,7 +111,11 @@ spicetify config extensions popupLyrics.js
 spicetify config extensions autoSkipVideo.js
 spicetify apply -n
 
-ollama pull phi3:mini
+ollama serve
+sudo useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
+sudo usermod -a -G ollama $(whoami)
+ollama run hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M
+
 rclone config
 
 for "$arg" in "$@"; do

@@ -5,14 +5,11 @@ function copy() {
         echo "Usage: copy <source_folder_name>"
         return 1
     fi
-
     src="$1"
     dest="$2"
-
     if [ -z "$2" ]; then
         dest="$HOME/.config/$src"
     fi
-
     sudo mkdir -p "$dest"
     sudo cp -r "$src/." "$dest/" 2>/dev/null
 }
@@ -26,7 +23,6 @@ copy fastfetch
 copy fontconfig
 copy gtk-3.0
 copy gtk-4.0
-copy hblock "/etc/systemd/system"
 copy hypr
 copy kitty
 copy matugen
@@ -36,6 +32,7 @@ copy pam "/etc/pam.d"
 copy qt5ct
 copy qt6ct
 copy rofi
+copy service "/etc/systemd/service"
 copy scripts "$HOME/.user_scripts"
 copy starship "$HOME/.config"
 copy swaync
@@ -44,12 +41,15 @@ copy systemd
 copy uwsm
 copy waybar
 copy waypaper
+copy wlogout
 copy xsettingsd
 copy yazi
 copy zathura
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
+sudo systemctl start ollama
+sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
 
 hyprpm enable hyprexpo
 hyprpm reload
