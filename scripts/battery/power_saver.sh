@@ -2,8 +2,8 @@
 
 set -uo pipefail
 
-if ((ZSH_VERSINFO[0] < 4 || (ZSH_VERSINFO[0] == 4 && ZSH_VERSINFO[1] < 4))); then
-    printf 'Error: ZSH 4.4+ required (found %s)\n' "${ZSH_VERSION}" >&2
+if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4))); then
+    printf 'Error: BASH 4.4+ required (found %s)\n' "${BASH_VERSION}" >&2
     exit 1
 fi
 
