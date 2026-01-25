@@ -2,11 +2,9 @@
 
 ![Arch Linux Logo](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/archlinux-logo.png)
 
----
-
-![Boot Screenshot](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshot.png)
-
 Configuration files for my Arch Linux setup
+
+## Installation & Setup Instructions
 
 1. Clone the git repository and travel to the specified directory (```~/Arch-Dots/```).
 
@@ -20,3 +18,8 @@ Configuration files for my Arch Linux setup
 
 > [!NOTE]
 > You will need to reboot your system to see many changes made in step 2
+
+## Gallery
+
+[01](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshots/01.png)
+
