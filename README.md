@@ -21,5 +21,5 @@ Configuration files for my Arch Linux setup
 
 ## Gallery
 
-[01](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshots/01.png)
+![01](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshots/01.png)
 
