@@ -102,6 +102,7 @@ hyprpm update
 hyprpm add https://github.com/hyprwm/hyprland-plugins
 hyprpm enable hyprexpo
 hyprpm reload
+hyprctl reload
 
 if ! command -v ollama >/dev/null; then
     cd $HOME

@@ -16,7 +16,7 @@ function copy() {
         dest="$HOME/.config/$src"
     fi
     sudo mkdir -p "$dest"
-    sudo cp -r "$src/." "$dest/" 2>/dev/null
+    sudo rsync -a --delete "$src/" "$dest/"
 }
 
 copy assets "$HOME/Pictures"
