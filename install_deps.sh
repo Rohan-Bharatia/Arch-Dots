@@ -2,10 +2,15 @@
 
 set -euo pipefail
 
+if [[ "${EUID}" -ne 0 ]]; then
+    echo "This script requires root privileges. Elevating..."
+    exec sudo "$0" "$@"
+fi
+
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less nvidia-smi sentencepiece discord libpulse songrec zsh zsh-syntax-highlighting
+sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less nvidia-smi sentencepiece discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet
 
 chsh -s $(which zsh)
 
@@ -18,7 +23,7 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout
+yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout waydroid
 
 mkdir -p $HOME/.uv
 cd $HOME/.uv
@@ -95,6 +100,8 @@ cd $HOME
 
 hyprpm update
 hyprpm add https://github.com/hyprwm/hyprland-plugins
+hyprpm enable hyprexpo
+hyprpm reload
 
 if ! command -v ollama >/dev/null; then
     cd $HOME
@@ -119,6 +126,8 @@ sudo usermod -a -G ollama $(whoami)
 ollama run hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M
 
 rclone config
+
+waydroid
 
 for "$arg" in "$@"; do
     case "$arg" in

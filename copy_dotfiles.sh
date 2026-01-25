@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "${EUID}" -ne 0 ]]; then
+    echo "This script requires root privileges. Elevating..."
+    exec sudo "$0" "$@"
+fi
+
 function copy() {
     if [ -z "$1" ]; then
         echo "Usage: copy <source_folder_name>"
@@ -53,7 +58,6 @@ sudo systemctl enable --now hblock-update.timer
 sudo systemctl start ollama
 sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
 
-hyprpm enable hyprexpo
-hyprpm reload
+git config --global credential.helper /usr/lib/git-core/git-credential-libsecret
 
 source ~/.zshrc

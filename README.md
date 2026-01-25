@@ -20,7 +20,3 @@ Configuration files for my Arch Linux setup
 
 > [!NOTE]
 > You will need to reboot your system to see many changes made in step 2
-
-## TODO
-
-- Write missing user scripts

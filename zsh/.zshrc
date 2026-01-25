@@ -18,7 +18,12 @@ setopt HIST_IGNORE_SPACE
 setopt HIST_VERIFY
 setopt EXTENDED_GLOB
 
+if [[ -d /usr/share/zsh/site-functions ]] && ! (( ${fpath[(Ie)/usr/share/zsh/site-functions]} )); then
+    fpath+=/usr/share/zsh/site-functions
+fi
+
 autoload -Uz compinit
+autoload -Uz history-search-end
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
   compinit -C
 else
@@ -31,6 +36,12 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+setopt correct
+setopt correct_all
+
+bindkey '^[[A' history-beginning-search-backward
+bindkey '^[[B' history-beginning-search-forward
 
 bindkey -v
 export KEYTIMEOUT=40
@@ -79,7 +90,6 @@ fi
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
-alias cat='bat'
 alias ncdu='gdu'
 alias io_drives='$HOME/.user_scripts/drives/io_monitor.sh'
 alias unlock='$HOME/.user_scripts/drives/drive_manager.sh unlock'
