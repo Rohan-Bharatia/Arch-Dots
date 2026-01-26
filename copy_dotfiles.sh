@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [[ "${EUID}" -ne 0 ]]; then
-    echo "This script requires root privileges. Elevating..."
-    exec sudo "$0" "$@"
-fi
+# if [[ "${EUID}" -ne 0 ]]; then
+#     echo "This script requires root privileges. Elevating..."
+#     exec sudo "$0" "$@"
+# fi
 
 function copy() {
     if [ -z "$1" ]; then
@@ -16,7 +16,7 @@ function copy() {
         dest="$HOME/.config/$src"
     fi
     sudo mkdir -p "$dest"
-    cp -r "$src/*" "$dest/"
+    cp -r "$src"/* "$dest"/
 }
 
 copy assets "$HOME/Pictures"
