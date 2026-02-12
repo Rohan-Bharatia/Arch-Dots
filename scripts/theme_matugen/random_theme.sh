@@ -29,12 +29,14 @@ if ! swww query >/dev/null 2>&1; then
     swww query >/dev/null 2>&1 || die "swww daemon failed to initialize"
 fi
 shopt -s globstar nullglob nocaseglob
-wallpapers=( "$WALLPAPER_DIR"/**/*.{jpg,jpeg,png,webp,gif} )
-if (( ${#wallpapers[@]} == 0 )); then
+wallpapers=("$WALLPAPER_DIR"/**/*.{jpg,jpeg,png,webp,gif})
+if ((${#wallpapers[@]} == 0)); then
     die "No image files found in '$WALLPAPER_DIR'"
 fi
 target_wallpaper="${wallpapers[RANDOM % ${#wallpapers[@]}]}"
 [[ -r "$target_wallpaper" ]] || die "Image not readable: '$target_wallpaper'"
 swww img "$target_wallpaper" "${SWWW_OPTS[@]}"
-    setsid uwsm-app -- matugen --mode dark --type scheme-fruit-salad image "$target_wallpaper" \
+setsid uwsm-app -- matugen --mode dark --type scheme-fruit-salad image "$target_wallpaper" \
     >/dev/null 2>&1 &
+WALLPAPER=$(swww query | grep -oP 'image: \K.*' | head -1)
+cp "$WALLPAPER" ~/.cache/current_wallpaper

@@ -14,10 +14,8 @@
 }
 
 window#waybar {
-    background-color: alpha(@background, 0.65);
+    background: linear-gradient(to right, alpha(@background, 0.75), transparent);
     color: @accent;
-    margin: 1px;
-    border-radius: 6px;
     padding: 6px 0;
 }
 
@@ -37,12 +35,13 @@ window#waybar {
 #custom-power,
 #custom-theme,
 #custom-network {
-    margin: 4px 3px;
-    padding: 4px 2px;
-    background-color: alpha(@surface, 0.85);
-    border: 1px solid alpha(@accent, 0.35);
-    border-radius: 8px;
+    margin: 6px 4px;
+    padding: 6px 4px;
+    background-color: alpha(@surface, 0.55);
+    border: 1px solid alpha(@accent, 0.25);
+    border-radius: 14px;
     color: @accent;
+    transition: all 0.2s ease;
 }
 
 #clock:hover,
@@ -59,24 +58,21 @@ window#waybar {
 #custom-inhibit-suspend:hover,
 #custom-theme:hover,
 #custom-network:hover {
-    background-color: alpha(@accent, 0.15);
-    border-color: alpha(@accent, 0.6);
-}
-
-#workspaces {
-    background-color: alpha(@accent, 0.12);
+    background-color: alpha(@accent, 0.18);
+    border-color: alpha(@accent, 0.45);
 }
 
 #workspaces button {
-    margin: 4px 3px;
-    padding: 2px;
-    border-radius: 6px;
+    margin: 6px 4px;
+    padding: 6px 6px;
+    border-radius: 12px;
+    background-color: alpha(@surface, 0.55);
     color: @foreground;
-    background-color: transparent;
+    transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
-    background-color: alpha(@accent, 0.2);
+    background-color: alpha(@accent, 0.25);
 }
 
 #workspaces button.focused,

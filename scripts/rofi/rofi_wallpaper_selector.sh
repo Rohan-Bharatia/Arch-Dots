@@ -120,6 +120,8 @@ if [[ -n "$selection" ]]; then
             --transition-duration 2 \
             --transition-fps 60 &
         setsid uwsm-app -- matugen $current_flags image "$full_path" &
+        WALLPAPER=$(swww query | grep -oP 'image: \K.*' | head -1)
+        cp "$WALLPAPER" ~/.cache/current_wallpaper
     else
         rm -f "$CACHE_FILE"
         notify-send "Error" "Could not resolve path. Cache cleared." -u critical
