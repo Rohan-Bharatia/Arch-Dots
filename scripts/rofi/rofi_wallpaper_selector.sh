@@ -9,7 +9,7 @@ readonly CACHE_FILE="${CACHE_DIR}/rofi_input_v2.cache"
 readonly PATH_MAP="${CACHE_DIR}/path_map.cache"
 readonly PLACEHOLDER_FILE="${CACHE_DIR}/_placeholder.png"
 readonly ROFI_THEME="${HOME}/.config/rofi/wallpaper.rasi"
-readonly RANDOM_THEME_SCRIPT="${HOME}/user_scripts/random_theme.sh"
+readonly RANDOM_THEME_SCRIPT="${HOME}/.user_scripts/theme_matugen/random_theme.sh"
 readonly THUMB_SIZE=300
 readonly MAX_JOBS=$(($(nproc) * 2))
 
@@ -114,12 +114,13 @@ if [[ -n "$selection" ]]; then
     if [[ -n "$full_path" && -f "$full_path" ]]; then
         current_flags=$(get_matugen_flags)
         [[ -z "$current_flags" ]] && current_flags="--mode dark"
+        current_flags="$current_flags --source-color-index 0"
         echo "Applying: $full_path"
         swww img "$full_path" \
             --transition-type grow \
             --transition-duration 2 \
             --transition-fps 60 &
-        setsid uwsm-app -- matugen $current_flags image "$full_path" &
+        setsid uwsm-app -- matugen $current_flags image "$full_path"
         WALLPAPER=$(swww query | grep -oP 'image: \K.*' | head -1)
         cp "$WALLPAPER" ~/.cache/current_wallpaper
     else
@@ -127,3 +128,4 @@ if [[ -n "$selection" ]]; then
         notify-send "Error" "Could not resolve path. Cache cleared." -u critical
     fi
 fi
+i

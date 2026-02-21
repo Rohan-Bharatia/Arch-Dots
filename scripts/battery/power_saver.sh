@@ -10,10 +10,10 @@ fi
 readonly BRIGHTNESS_LEVEL="1%"
 readonly VOLUME_CAP="50"
 readonly SUDO_REFRESH_INTERVAL=60 # Refresh sudo every N seconds to prevent timeout
-readonly BLUR_SCRIPT="${HOME}/user_scripts/hypr/hypr_blur_opacity_shadow_toggle.sh"
-readonly THEME_SCRIPT="${HOME}/user_scripts/theme_matugen/matugen_config.sh"
-readonly TERMINATOR_SCRIPT="${HOME}/user_scripts/battery/process_terminator.sh"
-readonly ASUS_PROFILE_SCRIPT="${HOME}/user_scripts/battery/asus_tuf_profile/quiet_profile_and_keyboard_light.sh"
+readonly BLUR_SCRIPT="${HOME}/.user_scripts/hypr/hypr_blur_opacity_shadow_toggle.sh"
+readonly THEME_SCRIPT="${HOME}/.user_scripts/theme_matugen/matugen_config.sh"
+readonly TERMINATOR_SCRIPT="${HOME}/.user_scripts/battery/process_terminator.sh"
+readonly ASUS_PROFILE_SCRIPT="${HOME}/.user_scripts/battery/asus_tuf_profile/quiet_profile_and_keyboard_light.sh"
 readonly ANIM_SOURCE="${HOME}/.config/hypr/source/animations/disable.conf"
 readonly ANIM_TARGET="${HOME}/.config/hypr/source/animations/active/active.conf"
 

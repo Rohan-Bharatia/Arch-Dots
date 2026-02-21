@@ -36,7 +36,7 @@ fi
 target_wallpaper="${wallpapers[RANDOM % ${#wallpapers[@]}]}"
 [[ -r "$target_wallpaper" ]] || die "Image not readable: '$target_wallpaper'"
 swww img "$target_wallpaper" "${SWWW_OPTS[@]}"
-setsid uwsm-app -- matugen --mode dark --type scheme-fruit-salad image "$target_wallpaper" \
+setsid uwsm-app -- matugen --mode dark --type scheme-fruit-salad --source-color-index 0 image "$target_wallpaper" \
     >/dev/null 2>&1 &
 WALLPAPER=$(swww query | grep -oP 'image: \K.*' | head -1)
-cp "$WALLPAPER" ~/.cache/current_wallpaper
+cp "$WALLPAPER" ~/.cache/current_wallpaperp "$WALLPAPER" ~/.cache/current_wallpaper
