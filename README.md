@@ -49,7 +49,7 @@ archinstall
 
 2. Run the [```install_deps.sh```](./install_deps.sh) file to install or update all the listed dependencies.
 > [!NOTE]
-> Run the install script with the `--wpilib` tag to install all linux compatible FRC 2025 WPILib tools
+> Run the install script with the `--wpilib` tag to install all linux compatible FRC 2026 WPILib tools
 
 3. Run the [```copy_dotfiles.sh```](./copy_dotfiles.sh) file to run the dotfiles from the repository directory to the ```~/.config/``` directory.
 

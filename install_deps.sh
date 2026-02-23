@@ -2,17 +2,12 @@
 
 set -euo pipefail
 
-if [[ "${EUID}" -ne 0 ]]; then
-    echo "This script requires root privileges. Elevating..."
-    exec sudo "$0" "$@"
-fi
-
 cd $HOME
 
 sudo pacman -Syu
 sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet
 
-chsh -s $(which zsh)
+chsh -s $(which /bin/zsh)
 
 if ! command -v yay >/dev/null; then
     mkdir -p $HOME/tmp
@@ -104,10 +99,10 @@ hyprpm enable hyprexpo
 hyprpm reload
 hyprctl reload
 
+sudo hblock
 if ! command -v ollama >/dev/null; then
     cd $HOME
-    curl -LO https://ollama.com/download/ollama-linux-amd64.tgz
-    sudo tar -C /usr -xzf ollama-linux-amd64.tgz
+    curl -fsSL https://ollama.com/install.sh | sh
 fi
 
 sudo chown -R $USER:$USER /opt/spotify
@@ -133,9 +128,9 @@ waydroid
 for "$arg" in "$@"; do
     case "$arg" in
         --wpilib)
-            local url="https://packages.wpilib.workers.dev/installer/v2025.3.2/Linux/WPILib_Linux-2025.3.2.tar.gz"
-            local tar="$HOME/WPILib_Linux-2025.3.2.tar.gz"
-            local dir="$HOME/WPILib_Linux-2025.3.2"
+            local url="https://packages.wpilib.workers.dev/installer/v2026.2.1/Linux/WPILib_Linux-2026.2.1.tar.gz"
+            local tar="$HOME/WPILib_Linux-2026.2.1.tar.gz"
+            local dir="$HOME/WPILib_Linux-2026.2.1"
             curl -L "$url" -o "$tar"
             tar -xzf "$tar"
             cd "$dir"

@@ -1,23 +1,28 @@
 #!/bin/bash
 
-# if [[ "${EUID}" -ne 0 ]]; then
-#     echo "This script requires root privileges. Elevating..."
-#     exec sudo "$0" "$@"
-# fi
-
 function copy() {
     if [ -z "$1" ]; then
-        echo "Usage: copy <source_folder_name>"
+        echo "Usage: copy <source_folder_name> [destination]"
         return 1
     fi
+
     src="$1"
     dest="$2"
-    if [ -z "$2" ]; then
+
+    if [ -z "$dest" ]; then
         dest="$HOME/.config/$src"
     fi
-    sudo mkdir -p "$dest"
-    cp -r "$src"/* "$dest"/
+
+    if [[ "$dest" == /etc/* || "$dest" == /usr/* ]]; then
+        sudo mkdir -p "$dest"
+        sudo cp -a "$src"/. "$dest"/ --remove-destination
+    else
+        mkdir -p "$dest"
+        cp -a "$src"/. "$dest"/ --remove-destination
+    fi
 }
+
+sudo chown -R $USER:$USER "$HOME/Pictures"
 
 copy assets "$HOME/Pictures"
 copy autostart
@@ -32,11 +37,10 @@ copy kitty
 copy matugen
 copy xdg "$HOME/.config"
 copy nvim
-copy pam "/etc/pam.d"
 copy qt5ct
 copy qt6ct
 copy rofi
-copy service "/etc/systemd/service"
+copy service "/etc/systemd/system"
 copy scripts "$HOME/.user_scripts"
 copy starship "$HOME/.config"
 copy swaync
@@ -51,7 +55,7 @@ copy yazi
 copy zathura
 copy zsh "$HOME"
 
-sudo chmod +x $HOME/.user_scripts/**/*.sh
+sudo find "$HOME/.user_scripts" -type f -name "*.sh" -exec chmod +x {} \;
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
