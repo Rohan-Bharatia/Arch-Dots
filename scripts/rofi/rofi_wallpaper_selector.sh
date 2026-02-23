@@ -114,7 +114,6 @@ if [[ -n "$selection" ]]; then
     if [[ -n "$full_path" && -f "$full_path" ]]; then
         current_flags=$(get_matugen_flags)
         [[ -z "$current_flags" ]] && current_flags="--mode dark"
-        current_flags="$current_flags --source-color-index 0"
         echo "Applying: $full_path"
         swww img "$full_path" \
             --transition-type grow \
