@@ -61,6 +61,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now hblock-update.timer
 sudo systemctl start ollama
 sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
+sudo systemctl enable --now swayosd-libinput-backend.service
 
 git config --global credential.helper /usr/lib/git-core/git-credential-libsecret
 

@@ -5,7 +5,7 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rust uv clang ffmpeg wl-clipboard mbuffer less discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet
+sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rustup uv clang ffmpeg wl-clipboard mbuffer less discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet
 
 chsh -s $(which /bin/zsh)
 
@@ -19,6 +19,8 @@ if ! command -v yay >/dev/null; then
 fi
 
 yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout waydroid
+
+rustup default stable
 
 mkdir -p $HOME/.uv
 cd $HOME/.uv
