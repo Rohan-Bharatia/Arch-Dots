@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Onshape
+Exec=chromium --app=https://cad.onshape.com
+Type=Application
+Icon=chromium
+Categories=Graphics;
+Terminal=false

@@ -24,6 +24,7 @@ function copy() {
 
 sudo chown -R $USER:$USER "$HOME/Pictures"
 
+copy applications "/usr/share/applications"
 copy assets "$HOME/Pictures"
 copy autostart
 copy btop
