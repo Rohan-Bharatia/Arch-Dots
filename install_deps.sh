@@ -18,7 +18,19 @@ if ! command -v yay >/dev/null; then
     cd $HOME
 fi
 
-yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout waydroid
+yay -S --needed --noconfirm nerd-fonts blueman zen-browser-bin hblock waypaper wifitui hyprshade tray-tui spotify spicetify-cli cuda-12.5 cudnn9.3-cuda12.5 wlogout waydroid cloudflare-warp-bin
+
+ensure_fuse_allow_other() {
+    if grep -Eq '^\s*user_allow_other\s*$' "/etc/fuse.conf"; then
+        return 0
+    fi
+    if grep -Eq '^\s*#\s*user_allow_other\s*$' "/etc/fuse.conf"; then
+        sed -i 's/^\s*#\s*user_allow_other\s*$/user_allow_other/' "/etc/fuse.conf"
+    else
+        echo "user_allow_other" >>"/etc/fuse.conf"
+    fi
+}
+ensure_fuse_allow_other "$@"
 
 rustup default stable
 

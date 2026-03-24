@@ -63,6 +63,11 @@ sudo systemctl enable --now hblock-update.timer
 sudo systemctl start ollama
 sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
 sudo systemctl enable --now swayosd-libinput-backend.service
+sudo systemctl enable --now warp-svc
+
+warp-cli registration new
+warp-cli mode warp
+warp-cli connect
 
 git config --global credential.helper /usr/lib/git-core/git-credential-libsecret
 
