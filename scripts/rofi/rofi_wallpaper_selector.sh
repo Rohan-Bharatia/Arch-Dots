@@ -13,7 +13,7 @@ readonly RANDOM_THEME_SCRIPT="${HOME}/.user_scripts/theme_matugen/random_theme.s
 readonly THUMB_SIZE=300
 readonly MAX_JOBS=$(($(nproc) * 2))
 
-for cmd in magick rofi swww notify-send; do
+for cmd in magick rofi awww notify-send; do
     if ! command -v "$cmd" &>/dev/null; then
         notify-send "Error" "Missing dependency: $cmd" -u critical
         exit 1
@@ -115,12 +115,12 @@ if [[ -n "$selection" ]]; then
         current_flags=$(get_matugen_flags)
         [[ -z "$current_flags" ]] && current_flags="--mode dark"
         echo "Applying: $full_path"
-        swww img "$full_path" \
+        awww img "$full_path" \
             --transition-type grow \
             --transition-duration 2 \
             --transition-fps 60 &
         setsid uwsm-app -- matugen $current_flags image "$full_path"
-        WALLPAPER=$(swww query | grep -oP 'image: \K.*' | head -1)
+        WALLPAPER=$(awww query | grep -oP 'image: \K.*' | head -1)
         cp "$WALLPAPER" ~/.cache/current_wallpaper
     else
         rm -f "$CACHE_FILE"

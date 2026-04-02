@@ -5,7 +5,7 @@ set -euo pipefail
 cd $HOME
 
 sudo pacman -Syu
-sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio swww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rustup uv clang ffmpeg wl-clipboard mbuffer less discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet blender kicad chromium
+sudo pacman -S --needed --noconfirm base-devel gcc hyprland hyprpaper hyprlock hypridle hyprshot hyprsunset waybar kitty rofi nemo btop pipewire playerctl gtk3 git pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf nvim matugen uwsm cava fontconfig swaync swayosd xsettingsd yazi zathura cmake meson cpio awww brightnessctl yad gnome-clocks nodejs npm imagemagick gum xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils unzip rustup uv clang ffmpeg wl-clipboard mbuffer less discord libpulse songrec zsh zsh-completions zsh-syntax-highlighting seahorse network-manager-applet blender kicad chromium
 
 chsh -s $(which /bin/zsh)
 
