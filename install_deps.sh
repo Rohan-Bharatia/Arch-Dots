@@ -142,12 +142,12 @@ waydroid
 for "$arg" in "$@"; do
     case "$arg" in
         --wpilib)
-            local url="https://packages.wpilib.workers.dev/installer/v2026.2.1/Linux/WPILib_Linux-2026.2.1.tar.gz"
-            local tar="$HOME/WPILib_Linux-2026.2.1.tar.gz"
-            local dir="$HOME/WPILib_Linux-2026.2.1"
-            curl -L "$url" -o "$tar"
-            tar -xzf "$tar"
-            cd "$dir"
+            URL="https://packages.wpilib.workers.dev/installer/v2026.2.1/Linux/WPILib_Linux-2026.2.1.tar.gz"
+            TAR="$HOME/WPILib_Linux-2026.2.1.tar.gz"
+            DIR="$HOME/WPILib_Linux-2026.2.1"
+            curl -L "$URL" -o "$TAR"
+            tar -xzf "$TAR"
+            cd "$DIR"
             ./WPILibInstaller
             cd "$HOME"
             ;;
