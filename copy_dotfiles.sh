@@ -59,6 +59,7 @@ copy zsh "$HOME"
 sudo find "$HOME/.user_scripts" -type f -name "*.sh" -exec chmod +x {} \;
 
 sudo systemctl daemon-reload
+sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now hblock-update.timer
 sudo systemctl start ollama
 sudo ln -nfs /usr/lib/ollama /usr/local/lib/ollama
