@@ -1,6 +1,8 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=Onshape
-Exec=chromium --app=https://cad.onshape.com
+Comment=A product development platform that brings together all the tools needed to develop a product from conception to production.
+Exec=/bin/chromium --app=https://cad.onshape.com
 Type=Application
 Icon=chromium
 Categories=Graphics;

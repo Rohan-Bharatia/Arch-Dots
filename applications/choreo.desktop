@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Choreo
+Comment=A time-optimal drivetrain trajectory planner for the FIRST Robotics Competition.
+Exec=/usr/local/bin/choreo
+Type=Application
+Icon=/usr/share/icons/frc/choreo.png
+Categories=Robotics;
+Terminal=false
