@@ -139,6 +139,15 @@ rclone config
 
 waydroid
 
+REAPER_URL="https://www.reaper.fm/files/7.x/reaper769_linux_x86_64.tar.xz"
+REAPER_TAR="$HOME/reaper769_linux_x86_64.tar.xz"
+REAPER_DIR="$HOME/reaper769_linux_x86_64"
+curl -L "$REAPER_URL" -o "$REAPER_TAR"
+tar -xzf "$REAPER_TAR"
+chmod +x ./"$REAPER_DIR"/install-reaper.sh
+./"$REAPER_DIR"/install-reaper.sh
+rm -rf "$REAPER_TAR" "$REAPER_DIR"
+
 for "$arg" in "$@"; do
     case "$arg" in
         --wpilib)
