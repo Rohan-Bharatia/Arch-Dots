@@ -4,8 +4,9 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    image = {{image}}
+    property string image: "{{image}}"
+
     <* for name, value in colors *>
-    {{name}} = "ff{{value.default.hex_stripped}}"
+    property string {{name}}: "#ff{{value.default.hex_stripped}}"
     <* endfor *>
 }

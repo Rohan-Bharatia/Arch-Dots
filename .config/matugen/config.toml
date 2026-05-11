@@ -21,7 +21,7 @@ post_hook = 'ln -nfs ./generated/kitty-colors.conf $HOME/.config/kitty/kitty-col
 [templates.quickshell]
 input_path = './templates/QuickshellColors.qml'
 output_path = './generated/QuickshellColors.qml'
-post_hook = 'quickshell kill || true; ln -nfs ./generated/QuickshellColors.qml $HOME/.config/quickshell/qmlig/QuickshellColors.qml; quickshell'
+post_hook = 'quickshell kill || true; ln -nfs ./generated/QuickshellColors.qml $HOME/.config/quickshell/config/QuickshellColors.qml; quickshell &'
 
 [templates.gtk3]
 input_path = './templates/gtk-colors.css'
