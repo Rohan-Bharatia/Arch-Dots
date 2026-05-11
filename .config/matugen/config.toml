@@ -1,0 +1,62 @@
+[config]
+
+[templates.matugen]
+input_path='./templates/Matugen.colors'
+output_path='./generated/Matugen.colors'
+
+[templates.hyprland]
+input_path = './templates/hyprland-colors.conf'
+output_path = './generated/hyprland-colors.conf'
+post_hook = 'hyprctl reload'
+
+[templates.hyprlock]
+input_path = './templates/hyprlock-colors.conf'
+output_path = './generated/hyprlock-colors.conf'
+
+[templates.kitty]
+input_path = './templates/kitty-colors.conf'
+output_path = './generated/kitty-colors.conf'
+post_hook = 'ln -nfs ./generated/kitty-colors.conf $HOME/.config/kitty/kitty-colors.conf; pkill -SIGUSR1 kitty || true'
+
+[templates.gtk3]
+input_path = './templates/gtk-colors.css'
+output_path = './generated/gtk-3.css'
+post_hook = "gsettings set org.gnome.desktop.interface icon-theme 'Fluent-teal-dark'"
+
+[templates.gtk4]
+input_path = './templates/gtk-colors.css'
+output_path = './generated/gtk-4.css'
+post_hook = 'mkdir -p $HOME/.config/gtk-3.0 $HOME/.config/gtk-4.0; ln -nfs ./generated/gtk-3.css $HOME/.config/gtk-3.0/gtk.css; ln -nfs ./generated/gtk-4.css $HOME/.config/gtk-4.0/gtk.css; gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"; systemctl --user reset-failed hyprpolkitagent; systemctl --user restart hyprpolkitagent || true'
+
+[templates.qt5ct]
+input_path = './templates/qtct-colors.conf'
+output_path = './generated/qt5ct-colors.conf'
+
+[templates.qt6ct]
+input_path = './templates/qtct-colors.conf'
+output_path = './generated/qt6ct-colors.conf'
+
+[templates.neovim]
+input_path='./templates/neovim-colors.lua'
+output_path='./generated/neovim-colors.lua'
+post_hook='pkill -SIGUSR1 nvim || true'
+
+[templates.yazi]
+input_path = './templates/yazi-theme.toml'
+output_path = './generated/yazi-theme.toml'
+post_hook = 'ln -nfs ./generated/yazi-theme.toml $HOME/.config/yazi/theme.toml'
+
+[templates.btop]
+input_path = './templates/btop.theme'
+output_path = './generated/btop-colors.theme'
+post_hook = 'mkdir -p $HOME/.config/btop/themes; ln -nfs ./generated/btop-colors.theme $HOME/.config/btop/themes/matugen.theme'
+
+[templates.spicetify]
+input_path = './templates/spotify-colors.ini'
+output_path = './generated/spotify-colors.ini'
+post_hook = 'killall -SIGUSR2 spotify; mkdir -p $HOME/.config/spicetify/Themes/matugen; ln -nfs $HOME/.config/matugen/generated/spotify-colors.ini $HOME/.config/spicetify/Themes/matugen/color.ini; spicetify config current_theme matugen color_theme matugen; spicetify apply -n'
+
+[templates.cava]
+input_path = './templates/cava-colors.ini'
+output_path = './generated/cava-colors.ini'
+post_hook = 'mkdir -p $HOME/.config/cava/themes; ln -nfs ./generated/cava-colors.ini $HOME/.config/cava/themes/cava-colors.ini; pkill -USR1 cava || true'

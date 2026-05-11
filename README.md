@@ -1,6 +1,6 @@
 # Arch-Dots
 
-![Arch Linux Logo](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/archlinux-logo.png)
+![Arch Linux Logo](./.github/assets/archlinux-logo.png)
 
 Configuration files for my Arch Linux setup
 
@@ -38,7 +38,7 @@ archinstall
 | Applications | Bluetooth, Pipewire, CUPS, PPD |
 | Network Configuration | Copy ISO configuration |
 | Additional Packages | git |
-| Timezone | US/Eastern |
+| Timezone | America/New_York |
 | Automatic Time Sync (NTP) | Enabled |
 
 6. Reboot and remove the external boot device (USB drive) while the screen is black
@@ -47,18 +47,16 @@ archinstall
 
 1. Clone the git repository and travel to the specified directory (```$HOME/Arch-Dots``` by default).
 
-2. Run the [```install_deps.sh```](./install_deps.sh) file to install or update all the listed dependencies.
+2. Run [`scripts/install_deps.sh`](./scripts/install_deps.sh) from the repository root directory.
+
+3. Run [`scripts/configure_deps.sh`](./scripts/configure_deps.sh) from the repository root directory.
+
+4. Run [`scripts/copy_dotfiles.sh`](./scripts/copy_dotfiles.sh) from the repository root directory.
+
+5. Reboot and log in to see all changes.
+
 > [!NOTE]
-> Run the install script with the `--wpilib` tag to install all linux compatible FRC 2026 WPILib tools
-
-3. Run the [```copy_dotfiles.sh```](./copy_dotfiles.sh) file to run the dotfiles from the repository directory to the ```~/.config/``` directory.
-
-4. Enjoy! :)
-
-> [!NOTE]
-> You will need to reboot your system to see many changes made in the last step
+> Run the [`scripts/manage_wpilib_pkgs.sh`](./scripts/manage_wpilib_pkgs.sh) script to install all Linux-compatible WPILib 2026 tools.
 
 ## Gallery
-
-![01](https://raw.githubusercontent.com/Rohan-Bharatia/Arch-Dots/refs/heads/main/assets/screenshots/01.png)
 
