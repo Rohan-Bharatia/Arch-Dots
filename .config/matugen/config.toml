@@ -18,6 +18,11 @@ input_path = './templates/kitty-colors.conf'
 output_path = './generated/kitty-colors.conf'
 post_hook = 'ln -nfs ./generated/kitty-colors.conf $HOME/.config/kitty/kitty-colors.conf; pkill -SIGUSR1 kitty || true'
 
+[templates.quickshell]
+input_path = './templates/QuickshellColors.qml'
+output_path = './generated/QuickshellColors.qml'
+post_hook = 'quickshell kill || true; ln -nfs ./generated/QuickshellColors.qml $HOME/.config/quickshell/qmlig/QuickshellColors.qml; quickshell'
+
 [templates.gtk3]
 input_path = './templates/gtk-colors.css'
 output_path = './generated/gtk-3.css'
