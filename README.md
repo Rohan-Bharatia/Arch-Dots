@@ -17,31 +17,10 @@ Configuration files for my Arch Linux setup
 4. Boot into the Arch Linux installation program, and run the following commands:
 
 ```sh
-iwctl station wlan0 connect "{SSID}" # Not necessary if using ethernet
-ping -c 6 google.com
-systemctl enable --now sshd
-passwd
-archinstall
+xxx
 ```
 
-5. Inside of the `archinstall`, select the following options:
-
-| Section | Selected Option(s) |
-| - | - |
-| Archinstall Language | English |
-| Mirrors & Repositories | United States |
-| Disk Configuration | Best effort default partition layout with btrfs |
-| Swap | zstd compression |
-| Bootloader | systemd |
-| Kernels | Linux & Linux LTS |
-| Profile | Hyprland, NVidia (proprietary), & ly |
-| Applications | Bluetooth, Pipewire, CUPS, PPD |
-| Network Configuration | Copy ISO configuration |
-| Additional Packages | git |
-| Timezone | America/New_York |
-| Automatic Time Sync (NTP) | Enabled |
-
-6. Reboot and remove the external boot device (USB drive) while the screen is black
+5. Reboot and remove the external boot device (USB drive) while the screen is black
 
 ### Post-Install Configuration
 

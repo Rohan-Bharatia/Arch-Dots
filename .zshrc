@@ -165,5 +165,6 @@ fi
 unset STARSHIP_CACHE STARSHIP_BIN FZF_CACHE FZF_BIN
 if [[ -z "$DISPLAY" ]] && [[ "$(tty)" == "/dev/tty1" ]]; then
     if uwsm check may-start; then
-    exec uwsm start hyprland.desktop
+      exec uwsm start mango
+    fi
 fi

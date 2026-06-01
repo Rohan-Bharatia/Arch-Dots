@@ -4,14 +4,9 @@
 input_path='./templates/Matugen.colors'
 output_path='./generated/Matugen.colors'
 
-[templates.hyprland]
-input_path = './templates/hyprland-colors.conf'
-output_path = './generated/hyprland-colors.conf'
-post_hook = 'hyprctl reload'
-
-[templates.hyprlock]
-input_path = './templates/hyprlock-colors.conf'
-output_path = './generated/hyprlock-colors.conf'
+[templates.mango]
+input_path = './templates/mango-colors.conf'
+output_path = './generated/mango-colors.conf'
 
 [templates.kitty]
 input_path = './templates/kitty-colors.conf'
@@ -31,7 +26,7 @@ post_hook = "gsettings set org.gnome.desktop.interface icon-theme 'Fluent-teal-d
 [templates.gtk4]
 input_path = './templates/gtk-colors.css'
 output_path = './generated/gtk-4.css'
-post_hook = 'mkdir -p $HOME/.config/gtk-3.0 $HOME/.config/gtk-4.0; ln -nfs ./generated/gtk-3.css $HOME/.config/gtk-3.0/gtk.css; ln -nfs ./generated/gtk-4.css $HOME/.config/gtk-4.0/gtk.css; gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"; systemctl --user reset-failed hyprpolkitagent; systemctl --user restart hyprpolkitagent || true'
+post_hook = 'mkdir -p $HOME/.config/gtk-3.0 $HOME/.config/gtk-4.0; ln -nfs ./generated/gtk-3.css $HOME/.config/gtk-3.0/gtk.css; ln -nfs ./generated/gtk-4.css $HOME/.config/gtk-4.0/gtk.css; gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"'
 
 [templates.qt5ct]
 input_path = './templates/qtct-colors.conf'
