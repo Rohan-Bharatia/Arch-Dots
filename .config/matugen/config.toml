@@ -12,12 +12,12 @@ post_hook = 'mmsg dispatch reload_config'
 [templates.kitty]
 input_path = './templates/kitty-colors.conf'
 output_path = './generated/kitty-colors.conf'
-post_hook = 'ln -nfs ./generated/kitty-colors.conf $HOME/.config/kitty/kitty-colors.conf; pkill -SIGUSR1 kitty || true'
+post_hook = 'ln -nfs $HOME/.config/matugen/generated/kitty-colors.conf $HOME/.config/kitty/kitty-colors.conf; pkill -SIGUSR1 kitty || true'
 
 [templates.quickshell]
 input_path = './templates/QuickshellColors.qml'
 output_path = './generated/QuickshellColors.qml'
-post_hook = 'quickshell kill || true; ln -nfs ./generated/QuickshellColors.qml $HOME/.config/quickshell/config/QuickshellColors.qml; quickshell &'
+post_hook = 'quickshell kill || true; ln -nfs $HOME/.config/matugen/generated/QuickshellColors.qml $HOME/.config/quickshell/config/QuickshellColors.qml; quickshell &'
 
 [templates.gtk3]
 input_path = './templates/gtk-colors.css'
@@ -27,7 +27,7 @@ post_hook = "gsettings set org.gnome.desktop.interface icon-theme 'Fluent-teal-d
 [templates.gtk4]
 input_path = './templates/gtk-colors.css'
 output_path = './generated/gtk-4.css'
-post_hook = 'mkdir -p $HOME/.config/gtk-3.0 $HOME/.config/gtk-4.0; ln -nfs ./generated/gtk-3.css $HOME/.config/gtk-3.0/gtk.css; ln -nfs ./generated/gtk-4.css $HOME/.config/gtk-4.0/gtk.css; gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"'
+post_hook = 'mkdir -p $HOME/.config/gtk-3.0 $HOME/.config/gtk-4.0; ln -nfs $HOME/.config/matugen/generated/gtk-3.css $HOME/.config/gtk-3.0/gtk.css; ln -nfs ./generated/gtk-4.css $HOME/.config/gtk-4.0/gtk.css; gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"'
 
 [templates.qt5ct]
 input_path = './templates/qtct-colors.conf'
@@ -45,12 +45,12 @@ post_hook='pkill -SIGUSR1 nvim || true'
 [templates.yazi]
 input_path = './templates/yazi-theme.toml'
 output_path = './generated/yazi-theme.toml'
-post_hook = 'ln -nfs ./generated/yazi-theme.toml $HOME/.config/yazi/theme.toml'
+post_hook = 'ln -nfs $HOME/.config/matugen/generated/yazi-theme.toml $HOME/.config/yazi/theme.toml'
 
 [templates.btop]
 input_path = './templates/btop.theme'
 output_path = './generated/btop-colors.theme'
-post_hook = 'mkdir -p $HOME/.config/btop/themes; ln -nfs ./generated/btop-colors.theme $HOME/.config/btop/themes/matugen.theme'
+post_hook = 'mkdir -p $HOME/.config/btop/themes; ln -nfs $HOME/.config/matugen/generated/btop-colors.theme $HOME/.config/btop/themes/matugen.theme'
 
 [templates.rofi]
 input_path = './templates/rofi-colors.rasi'
@@ -64,7 +64,7 @@ post_hook = 'killall -SIGUSR2 spotify; mkdir -p $HOME/.config/spicetify/Themes/m
 [templates.cava]
 input_path = './templates/cava-colors.ini'
 output_path = './generated/cava-colors.ini'
-post_hook = 'mkdir -p $HOME/.config/cava/themes; ln -nfs ./generated/cava-colors.ini $HOME/.config/cava/themes/cava-colors.ini; pkill -USR1 cava || true'
+post_hook = 'mkdir -p $HOME/.config/cava/themes; ln -nfs $HOME/.config/matugen/generated/cava-colors.ini $HOME/.config/cava/themes/cava-colors.ini; pkill -USR1 cava || true'
 
 [templates.swayosd]
 input_path = './templates/swayosd-colors.css'
@@ -74,14 +74,14 @@ post_hook = '$HOME/.local/share/scripts/restart_swayosd.sh'
 [templates.zathura]
 input_path = './templates/zathura-colors'
 output_path = './generated/zathura-colors'
-post_hook = 'ln -nfs ./generated/zathura-colors $HOME/.config/zathura/zathurarc'
+post_hook = 'ln -nfs $HOME/.config/matugen/generated/zathura-colors $HOME/.config/zathura/zathurarc'
 
 [templates.starship]
 input_path = './templates/starship-colors.toml'
 output_path = './generated/starship-colors.toml'
-post_hook = 'ln -nfs ./generated/starship-colors.toml $HOME/.config/starship.toml'
+post_hook = 'ln -nfs $HOME/.config/matugen/generated/starship-colors.toml $HOME/.config/starship.toml'
 
 [templates.pywalfox]
 input_path = './templates/pywalfox-colors.json'
 output_path = './generated/pywalfox-colors.json'
-post_hook = 'ln -nfs ./generated/pywalfox-colors.json $HOME/.cache/wal/colors.json; pywalfox update || true'
+post_hook = 'ln -nfs $HOME/.config/matugen/generated/pywalfox-colors.json $HOME/.cache/wal/colors.json; pywalfox update || true'
