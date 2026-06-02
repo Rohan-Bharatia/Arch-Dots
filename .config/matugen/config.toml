@@ -52,6 +52,10 @@ input_path = './templates/btop.theme'
 output_path = './generated/btop-colors.theme'
 post_hook = 'mkdir -p $HOME/.config/btop/themes; ln -nfs ./generated/btop-colors.theme $HOME/.config/btop/themes/matugen.theme'
 
+[templates.rofi]
+input_path = './templates/rofi-colors.rasi'
+output_path = './generated/rofi-colors.rasi'
+
 [templates.spicetify]
 input_path = './templates/spotify-colors.ini'
 output_path = './generated/spotify-colors.ini'
@@ -61,3 +65,23 @@ post_hook = 'killall -SIGUSR2 spotify; mkdir -p $HOME/.config/spicetify/Themes/m
 input_path = './templates/cava-colors.ini'
 output_path = './generated/cava-colors.ini'
 post_hook = 'mkdir -p $HOME/.config/cava/themes; ln -nfs ./generated/cava-colors.ini $HOME/.config/cava/themes/cava-colors.ini; pkill -USR1 cava || true'
+
+[templates.swayosd]
+input_path = './templates/swayosd-colors.css'
+output_path = './generated/swayosd-colors.css'
+post_hook = '$HOME/.local/share/scripts/restart_swayosd.sh'
+
+[templates.zathura]
+input_path = './templates/zathura-colors'
+output_path = './generated/zathura-colors'
+post_hook = 'ln -nfs ./generated/zathura-colors $HOME/.config/zathura/zathurarc'
+
+[templates.starship]
+input_path = './templates/starship-colors.toml'
+output_path = './generated/starship-colors.toml'
+post_hook = 'ln -nfs ./generated/starship-colors.toml $HOME/.config/starship.toml'
+
+[templates.pywalfox]
+input_path = './templates/pywalfox-colors.json'
+output_path = './generated/pywalfox-colors.json'
+post_hook = 'ln -nfs ./generated/pywalfox-colors.json $HOME/.cache/wal/colors.json; pywalfox update || true'
