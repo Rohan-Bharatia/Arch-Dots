@@ -7,17 +7,30 @@ Rectangle {
 
     required property string icon
     property bool active: false
+    property bool hovered: false
 
     width: 42
     height: 42
     radius: Constants.radius
     color: active
         ? QuickshellColors.primary_container
-        : "transparent"
+        : hovered
+            ? Qt.alpha(QuickshellColors.surface_container_high, 0.85)
+            : "transparent"
 
     Behavior on color {
         ColorAnimation {
-            duration: 180
+            duration: Constants.animDuration
+        }
+    }
+
+    property bool pressed: false
+    scale: pressed ? 0.88 : 1.0
+
+    Behavior on scale {
+        NumberAnimation {
+            duration: Constants.animDuration
+            easing.type: Easing.OutCubic
         }
     }
 
@@ -25,26 +38,30 @@ Rectangle {
         anchors.centerIn: parent
         text: root.icon
         font.pixelSize: Constants.iconSize
-        color: active
+        color: root.active
             ? QuickshellColors.primary
-            : QuickshellColors.on_surface
+            : root.hovered
+                ? QuickshellColors.on_surface
+                : QuickshellColors.on_surface_variant
+
+        Behavior on color {
+            ColorAnimation {
+                duration: Constants.animDuration
+            }
+        }
     }
 
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
 
-        onEntered: {
-            if (!root.active)
-                root.color = Qt.alpha(
-                    QuickshellColors.surface_container_high,
-                    0.9
-                )
-        }
-
+        onEntered: root.hovered = true
         onExited: {
-            if (!root.active)
-                root.color = "transparent"
+            root.hovered = false
+            root.pressed = false
         }
+        onPressed: root.pressed = true
+        onReleased: root.pressed = false
     }
 }

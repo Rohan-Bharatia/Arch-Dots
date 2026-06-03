@@ -6,8 +6,7 @@ Rectangle {
     color: QuickshellColors.surface_container
     radius: Constants.radius
     border.width: 1
-    border.color: Qt.alpha(
-        QuickshellColors.outline,
-        0.35
-    )
+    border.color: Qt.alpha(QuickshellColors.outline, 0.3)
+    layer.enabled: true
+    layer.effect: null
 }

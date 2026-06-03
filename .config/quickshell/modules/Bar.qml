@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 
 import "../tools"
@@ -16,27 +17,20 @@ PanelWindow {
         anchors.margins: Constants.margins
         radius: Constants.radius
 
-        color:
-            Qt.alpha(
-                QuickshellColors.surface,
-                0.85
-            )
-        border.color:
-            Qt.alpha(
-                QuickshellColors.outline,
-                0.25
-            )
+        color: Qt.alpha(QuickshellColors.surface, 0.88)
+        border.color: Qt.alpha(QuickshellColors.outline, 0.22)
 
-        Column {
+        ColumnLayout {
             anchors.fill: parent
             anchors.margins: Constants.margins
             spacing: Constants.spacing
 
             Workspaces {}
 
-            Item {
-                width: 1
-                height: Constants.spacing
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color:  Qt.alpha(QuickshellColors.outline_variant, 0.35)
             }
 
             Media {}
@@ -44,17 +38,22 @@ PanelWindow {
             Clock {}
 
             Item {
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.fillHeight: true
             }
 
             System {}
 
-            Item {
-                width: 1
-                height: Constants.spacing
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color:  Qt.alpha(QuickshellColors.outline_variant, 0.35)
             }
 
             Power {}
+
+            Item {
+                Layout.preferredHeight: 2
+            }
         }
     }
 }
