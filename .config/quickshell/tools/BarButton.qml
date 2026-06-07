@@ -8,6 +8,7 @@ Rectangle {
     required property string icon
     property bool active: false
     property bool hovered: false
+    property int badge: 0
 
     width: 42
     height: 42
@@ -63,5 +64,29 @@ Rectangle {
         }
         onPressed: root.pressed = true
         onReleased: root.pressed = false
+    }
+
+    Rectangle {
+        visible: root.badge > 0
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: 3
+        anchors.rightMargin: 3
+        width: root.badge > 9
+            ? 17
+            : 14
+        height: 14
+        radius: Constants.radius
+        color: QuickshellColors.error
+
+        Text {
+            anchors.centerIn: parent
+            text: root.badge > 99
+                ? "99"
+                : String(root.badge)
+            font.pixelSize: 7
+            font.weight: Font.Bold
+            color: QuickshellColors.on_error
+        }
     }
 }

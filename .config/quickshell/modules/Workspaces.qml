@@ -1,9 +1,12 @@
 import QtQuick
+import QtQuick.Layouts
 
 import "../config"
 import "../tools"
 
 Section {
+    Layout.alignment: Qt.AlignHCenter
+
     Repeater {
         model: Mango.workspaces
 

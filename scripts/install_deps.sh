@@ -3,11 +3,12 @@
 set -e
 
 PACMAN_PKG_LIST=(base-devel git gcc kitty rofi swappy gtk3 gtk4 qt5ct qt6ct swaync swayosd \
-                 cliphist grim swaylock wlr-randr htop btop wtype awww quickshell playerctl \
+                 cliphist grim swaylock wlr-randr htop btop wtype awww quickshell \
+                 sof-firmware alsa-firmware playerctl wine yabridge yabridgectl  python-gobject \
                  pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf \
                  nvim matugen uwsm cava fontconfig xsettingsd yazi zathura cpio brightnessctl \
                  nodejs npm xorg-xhost gnome-keyring libsecret starship vlc mpv libva-utils \
-                 unzip rustup uv clang ffmpeg wl-clipboard mbuffer less discord libpulse zsh \
+                 unzip rustup uv clang ffmpeg wl-clipboard mbuffer less vesktop libpulse zsh \
                  zsh-completions zsh-syntax-highlighting seahorse networkmanager \
                  network-manager-applet blender kicad chromium eza expac polkit-gnome trash-cli)
 YAY_PKG_LIST=(mangowm nerd-fonts spotify spicetify zen-browser-bin cloudflare-warp-bin)

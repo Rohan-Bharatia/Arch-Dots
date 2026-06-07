@@ -4,11 +4,18 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import "../config"
+
 Singleton {
     id: root
 
     property int currentWorkspace: 1
-    property var workspaces: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    property var workspaces: {
+        var arr = []
+        for (var i = 1; i <= Settings.workspaceCount; i++)
+            arr.push(i)
+        return arr
+    }
     property string focusedWindow: ""
 
     signal workspaceChanged(int id)
@@ -39,6 +46,7 @@ Singleton {
     Process {
         id: watchProc
         command: ["mmsg", "watch", "all-tags"]
+        running: true
 
         stdout: SplitParser {
             splitMarker: "\n"
@@ -52,11 +60,7 @@ Singleton {
             }
         }
 
-        running: true
-
-        onExited: {
-            restartTimer.start()
-        }
+        onExited: restartTimer.start()
     }
 
     Timer {
@@ -82,5 +86,7 @@ Singleton {
                 }
             }
         }
+
+        onExited: running = false
     }
 }
