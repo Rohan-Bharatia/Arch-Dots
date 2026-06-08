@@ -2,6 +2,9 @@
 
 set -e
 
+grep -q 'acpi_backlight=native' /etc/default/grub || sudo sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\([^"]*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 acpi_backlight=native"/' /etc/default/grub
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
 git config --global credential.helper /usr/lib/git-core/git-credential-libsecret
 
 if [ -e /usr/bin/zsh ]; then
@@ -21,6 +24,9 @@ spicetify config extensions autoSkipVideo.js
 spicetify apply -n
 
 ollama run hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M
+
+yabridgectl add ~/.wine/drive_c
+yabridgectl sync
 
 rclone config
 

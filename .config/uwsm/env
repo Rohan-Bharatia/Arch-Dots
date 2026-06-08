@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 export LANG=en_US.UTF-8
+export DISPLAY=:0
 export XDG_CURRENT_DESKTOP=Mango
 export XDG_SESSION_TYPE=wayland
 export XDG_SESSION_DESKTOP=Mango

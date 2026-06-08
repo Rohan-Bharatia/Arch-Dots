@@ -423,7 +423,10 @@ Item {
                             spacing: 6
                             visible: system.selectedSsid.length > 0
 
+                            property bool showPass: false
+
                             Rectangle {
+                                width: parent.width
                                 height: 34
                                 radius: 8
                                 color: Qt.alpha(QuickshellColors.surface_variant, 0.5)
@@ -450,23 +453,51 @@ Item {
                                         color: QuickshellColors.on_surface_variant
                                     }
 
-                                    TextInput {
-                                        id: passInput
+                                    Item {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        width: parent.width - 60
-                                        font.pixelSize: Constants.fontSizeXs
-                                        color: QuickshellColors.on_surface
-                                        echoMode: TextInput.Password
+                                        width: parent.width - 56
+                                        height: passInput.implicitHeight
 
-                                        Text {
+                                        TextInput {
+                                            id: passInput
                                             anchors.fill: parent
-                                            text: "Password"
-                                            color: QuickshellColors.on_surface_variant
-                                            font: parent.font
-                                            visible: parent.text.length === 0 && !parent.activeFocus
-                                        }
+                                            font.pixelSize: Constants.fontSizeXs
+                                            color: QuickshellColors.on_surface
+                                            echoMode: parent.parent.parent.parent.showPass
+                                                ? TextInput.Normal
+                                                : TextInput.Password
+                                            clip: true
 
-                                        Keys.onReturnPressed: system.connectTo(system.selectedSsid, text)
+                                            Text {
+                                                anchors.fill: parent
+                                                text: "Password"
+                                                color: QuickshellColors.on_surface_variant
+                                                font: parent.font
+                                                verticalAlignment: Text.AlignVCenter
+                                                visible: parent.text.length === 0 && !parent.activeFocus
+                                            }
+
+                                            Keys.onReturnPressed: system.connectTo(system.selectedSsid, text)
+                                        }
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: parent.parent.parent.showPass
+                                            ? "󰤨"
+                                            : "󰺸"
+                                        font.pixelSize: 11
+                                        color: QuickshellColors.on_surface_variant
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+
+                                            onClicked: {
+                                                var col = parent.parent.parent.parent
+                                                col.showPass = !col.showPass
+                                            }
+                                        }
                                     }
                                 }
                             }

@@ -3,7 +3,7 @@
 set -e
 
 PACMAN_PKG_LIST=(base-devel git gcc kitty rofi swappy gtk3 gtk4 qt5ct qt6ct swaync swayosd \
-                 cliphist grim swaylock wlr-randr htop btop wtype awww quickshell \
+                 cliphist grim swaylock wlr-randr htop btop wtype awww quickshell xorg \
                  sof-firmware alsa-firmware playerctl wine yabridge yabridgectl  python-gobject \
                  pavucontrol rclone python python-pip ttf-dejavu fastfetch openresolv fzf \
                  nvim matugen uwsm cava fontconfig xsettingsd yazi zathura cpio brightnessctl \

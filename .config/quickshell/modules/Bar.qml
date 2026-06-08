@@ -52,6 +52,8 @@ PanelWindow {
             return datetime.implicitHeight
         if (openTray === "media")
             return media.implicitHeight
+        if (openTray === "bluetooth")
+            return bluetooth.implicitHeight
         if (openTray === "battery")
             return battery.implicitHeight
         if (openTray === "power")
@@ -135,6 +137,14 @@ PanelWindow {
             BarTray {
                 icon: "󰎇"
                 tray: "media"
+                bar: bar
+            }
+
+            BarTray {
+                icon: bluetooth.powered
+                    ? "󰂯"
+                    : "󰂲"
+                tray: "bluetooth"
                 bar: bar
             }
 
@@ -239,6 +249,13 @@ PanelWindow {
             width: parent.width
             enabled: bar.openTray === "media"
             shown: bar.openTray === "media"
+        }
+
+        Bluetooth {
+            id: bluetooth
+            width: parent.width
+            enabled: bar.openTray === "bluetooth"
+            shown: bar.openTray === "bluetooth"
         }
 
         Notifications {

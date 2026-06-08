@@ -30,7 +30,24 @@ PanelWindow {
         }
     }
 
+    function ordinalSuffix(d) {
+        if (d >= 11 && d <= 13)
+            return "th"
+
+        switch (d % 10) {
+            case 1:
+                return "st"
+            case 2:
+                return "nd"
+            case 3:
+                return "rd"
+            default:
+                return "th"
+        }
+    }
+
     property date now: new Date()
+    property bool showPass: false
 
     Timer {
         interval: 1000
@@ -41,11 +58,16 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.alpha("#0a0a12", 0.53)
+        color: Qt.alpha(QuickshellColors.surface, 0.35)
 
         MouseArea {
             anchors.fill: parent
             onClicked: passInput.forceActiveFocus()
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.alpha(QuickshellColors.primary_active, 0.08)
         }
 
         ColumnLayout {
@@ -57,16 +79,19 @@ PanelWindow {
                 text: Qt.formatDateTime(lockScreen.now, "HH:mm")
                 font.pixelSize: 80
                 font.weight: Font.Thin
-                color: "#ffffff"
+                color: QuickshellColors.on_surface
                 opacity: 0.92
             }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatDateTime(lockScreen.now, "dddd, d MMMM yyyy")
+                textFormat: Text.RichText
+                text: Qt.formatDateTime(lockScreen.now, "dddd, MMMM d") +
+                    "<sup>" + lockScreen.ordinalSuffix(lockScreen.now.getDate()) + "</sup>, " +
+                    Qt.formatDateTime(lockScreen.now, "yyyy")
                 font.pixelSize: 16
-                color: "#ffffff"
-                opacity: 0.55
+                color: QuickshellColors.on_surface_variant
+                opacity: 0.75
             }
 
             Item {
@@ -75,12 +100,14 @@ PanelWindow {
 
             Rectangle {
                 Layout.alignment: Qt.AlignHCenter
-                width: 280
-                height: 48
-                radius: 24
-                color: Qt.alpha("#ffffff", 0.08)
+                width: 300
+                height: 50
+                radius: Constants.radius
+                color: Qt.alpha(QuickshellColors.surface_variant, 0.08)
                 border.width: 1
-                border.color: Qt.alpha("#ffffff", passInput.activeFocus ? 0.5 : 0.18)
+                border.color: passInput.activeFocus
+                    ? Qt.alpha(QuickshellColors.primary, 0.7)
+                    : Qt.alpha(QuickshellColors.outline, 0.35)
 
                 Behavior on border.color {
                     ColorAnimation {
@@ -98,20 +125,30 @@ PanelWindow {
                         anchors.verticalCenter: parent.verticalCenter
                         text: "󰌾"
                         font.pixelSize: 16
-                        color: Qt.alpha("#ffffff", 0.5)
+                        color: passInput.activeFocus
+                            ? QuickshellColors.primary
+                            : QuickshellColors.on_surface_variant
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Constants.animDuration
+                            }
+                        }
                     }
 
                     Item {
                         anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width - 56
+                        width: parent.width - 72
                         height: passInput.implicitHeight
 
                         TextInput {
                             id: passInput
                             anchors.fill: parent
                             font.pixelSize: 15
-                            color: "#ffffff"
-                            echoMode: TextInput.Password
+                            color: QuickshellColors.on_surface
+                            echoMode: lockScreen.showPass
+                                ? TextInput.Normal
+                                : TextInput.Password
                             clip: true
                             focus: lockScreen.active
                             Keys.onReturnPressed: lockScreen.tryUnlock(text)
@@ -122,9 +159,33 @@ PanelWindow {
                             anchors.fill: parent
                             text: "Enter password to unlock"
                             font: passInput.font
-                            color: Qt.alpha("#ffffff", 0.35)
+                            color: QuickshellColors.on_surface_variant
                             verticalAlignment: Text.AlignVCenter
                             visible: passInput.text.length === 0 && !passInput.activeFocus
+                        }
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: lockScreen.showPass
+                            ? "󰺸"
+                            : "󰤨"
+                        font.pixelSize: 14
+                        color: QuickshellColors.on_surface_variant
+                        opacity: passInput.text.length > 0
+                            ? 1
+                            : 0.35
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: Constants.animDuration
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: lockScreen.showPass = !lockScreen.showPass
                         }
                     }
                 }
@@ -132,6 +193,7 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: passInput.forceActiveFocus()
+                    propagateComposedEvents: true
                 }
             }
 
@@ -144,8 +206,11 @@ PanelWindow {
                 Layout.alignment: Qt.AlignHCenter
                 text: ""
                 font.pixelSize: 12
-                color: "#ff6b6b"
-                opacity: text.length > 0 ? 1 : 0
+                color: QuickshellColors.error
+                opacity: text.length > 0
+                    ? 1
+                    : 0
+
                 Behavior on opacity {
                     NumberAnimation {
                         duration: Constants.animDuration
@@ -159,14 +224,14 @@ PanelWindow {
 
             Rectangle {
                 Layout.alignment: Qt.AlignHCenter
-                width: 140
-                height: 40
-                radius: 20
+                width: 160
+                height: 44
+                radius: 22
                 color: unlockHover.containsMouse
-                    ? Qt.alpha("#ffffff", 0.18)
-                    : Qt.alpha("#ffffff", 0.10)
+                    ? Qt.alpha(QuickshellColors.primary, 0.22)
+                    : Qt.alpha(QuickshellColors.primary_active, 0.55)
                 border.width: 1
-                border.color: Qt.alpha("#ffffff", 0.22)
+                border.color: Qt.alpha(QuickshellColors.primary, 0.22)
 
                 Behavior on color {
                     ColorAnimation {
@@ -174,13 +239,24 @@ PanelWindow {
                     }
                 }
 
-                Text {
+                Row {
                     anchors.centerIn: parent
-                    text: "Unlock"
-                    font.pixelSize: 13
-                    font.weight: Font.Medium
-                    color: "#ffffff"
-                    opacity: 0.88
+                    spacing: Constants.spacing
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "󰍁"
+                        font.pixelSize: 14
+                        color: QuickshellColors.on_primary_container
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Unlock"
+                        font.pixelSize: 13
+                        font.weight: Font.Medium
+                        color: QuickshellColors.on_primary_container
+                    }
                 }
 
                 MouseArea {
@@ -202,6 +278,7 @@ PanelWindow {
             if (code === 0) {
                 passInput.text = ""
                 feedbackText.text = ""
+                lockScreen.showPass = false
                 lockScreen.unlocked()
             } else {
                 feedbackText.text = "Incorrect password"
@@ -264,6 +341,7 @@ PanelWindow {
         if (active) {
             passInput.text = ""
             feedbackText.text = ""
+            passInput.showPass = false
             passInput.forceActiveFocus()
         }
     }
