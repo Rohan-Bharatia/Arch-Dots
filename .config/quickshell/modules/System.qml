@@ -379,7 +379,8 @@ Item {
 
                                 Row {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 8; anchors.rightMargin: 8
+                                    anchors.leftMargin: 8
+                                    anchors.rightMargin: 8
                                     spacing: 6
 
                                     Text {
@@ -443,7 +444,8 @@ Item {
 
                                 Row {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 10; anchors.rightMargin: 10
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 10
                                     spacing: 6
 
                                     Text {
@@ -514,7 +516,9 @@ Item {
 
                                 Text {
                                     anchors.centerIn: parent
-                                    text: system.connecting ? "Connecting…" : "Connect to " + system.selectedSsid
+                                    text: system.connecting
+                                        ? "Connecting…"
+                                        : "Connect to " + system.selectedSsid
                                     font.pixelSize: Constants.fontSizeXs
                                     font.weight: Font.Medium
                                     color: system.connecting

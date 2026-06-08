@@ -150,7 +150,8 @@ Item {
 
                             onClicked: {
                                 if (datetime.calMonth === 0) {
-                                    datetime.calMonth = 11; datetime.calYear--
+                                    datetime.calMonth = 11
+                                    datetime.calYear--
                                 } else {
                                     datetime.calMonth--
                                 }
@@ -180,7 +181,8 @@ Item {
 
                             onClicked: {
                                 if (datetime.calMonth === 11) {
-                                    datetime.calMonth = 0; datetime.calYear++
+                                    datetime.calMonth = 0
+                                    datetime.calYear++
                                 } else {
                                     datetime.calMonth++
                                 }
@@ -222,7 +224,9 @@ Item {
                             height: width
                             Rectangle {
                                 anchors.centerIn: parent
-                                width: parent.width - 4; height: width; radius: width / 2
+                                width: parent.width - 4
+                                height: width
+                                radius: width / 2
                                 color: modelData.isToday
                                     ? QuickshellColors.primary
                                     : "transparent"
@@ -235,8 +239,12 @@ Item {
                                     ? String(modelData.day)
                                     : ""
                                 font.pixelSize: Constants.fontSizeXs
-                                font.weight: modelData.isToday ? Font.Bold : Font.Normal
-                                color: modelData.isToday ? QuickshellColors.on_primary : QuickshellColors.on_surface
+                                font.weight: modelData.isToday
+                                    ? Font.Bold
+                                    : Font.Normal
+                                color: modelData.isToday
+                                    ? QuickshellColors.on_primary
+                                    : QuickshellColors.on_surface
                                 horizontalAlignment: Text.AlignHCenter
                             }
                         }
