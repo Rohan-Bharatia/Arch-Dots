@@ -65,11 +65,6 @@ PanelWindow {
             onClicked: passInput.forceActiveFocus()
         }
 
-        Rectangle {
-            anchors.fill: parent
-            color: Qt.alpha(QuickshellColors.primary_active, 0.08)
-        }
-
         ColumnLayout {
             anchors.centerIn: parent
             spacing: 0
