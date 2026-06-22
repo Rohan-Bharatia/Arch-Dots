@@ -15,7 +15,6 @@ copy_safe() {
 
 copy_safe "./.config" "$HOME/.config"
 copy_safe "./.local" "$HOME/.local"
-copy_safe "./Desktop" "$HOME/Desktop"
 copy_safe "./.zshrc" "$HOME/.zshrc"
 
 if [ -d "$HOME/.local/scripts" ]; then

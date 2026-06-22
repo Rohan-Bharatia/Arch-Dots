@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Services.Mpris
+import Quickshell.Services.Pipewire
 
 import "../config"
 import "../tools"
@@ -23,29 +23,43 @@ Item {
         }
     }
 
-    property MprisPlayer activePlayer: {
-        for (var i = 0; i < Mpris.players.length; i++) {
-            if (Mpris.players[i].playbackState === MprisPlaybackState.Playing)
-                return Mpris.players[i]
+    PwObjectTracker {
+        id: streamTracker
+        objects: {
+            var list = []
+            if (Pipewire.defaultAudioSink)
+                list.push(Pipewire.defaultAudioSink)
+
+            var all = Pipewire.nodes.values ?? []
+            for (var i = 0; i < all.length; i++) {
+                if (all[i] && all[i].isStream && all[i].audio)
+                    list.push(all[i])
+            }
+
+            return list
+        }
+    }
+    property var streamNodes: {
+        var result = []
+        var all = Pipewire.nodes.values ?? []
+        for (var i = 0; i < all.length; i++) {
+            var n = all[i]
+            if (n && n.isStream && n.audio)
+                result.push(n)
         }
 
-        return Mpris.players.length > 0 ? Mpris.players[0] : null
+        return result
     }
+    property var nowPlayingNode: {
+        for (var i = 0; i < streamNodes.length; i++) {
+            var n = streamNodes[i]
+            var title = n.properties?.["media.title"] ?? ""
+            var name  = n.properties?.["media.name"]  ?? ""
+            if (title.length > 0 || name.length > 0)
+                return n
+        }
 
-    property bool isPlaying: activePlayer !== null && activePlayer.playbackState === MprisPlaybackState.Playing
-
-    property real trackProgress: {
-        if (activePlayer === null || activePlayer.length <= 0)
-            return 0
-
-        return Math.max(0, Math.min(1, activePlayer.position / activePlayer.length))
-    }
-
-    function fmtTime(us) {
-        var s = Math.floor(us / 1000000)
-        var m = Math.floor(s / 60)
-        s = s % 60
-        return m + ":" + (s < 10 ? "0" : "") + s
+        return null
     }
 
     ColumnLayout {
@@ -60,219 +74,242 @@ Item {
             label: "MEDIA"
         }
 
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            implicitHeight: width
-            radius: Constants.radius
-            color: Qt.alpha(QuickshellColors.primary_container, 0.7)
-            clip: true
-            border.width: 1
-            border.color: Qt.alpha(QuickshellColors.outline, 0.20)
-
-            Image {
-                anchors.fill: parent
-                source: media.activePlayer !== null
-                    ? (media.activePlayer.trackArtUrl ?? "")
-                    : ""
-                fillMode: Image.PreserveAspectCrop
-                visible: status === Image.Ready
+        TrayCard {
+            TrayLabel {
+                text: "Output"
             }
 
-            Text {
-                anchors.centerIn: parent
-                text: "♫"
-                font.pixelSize: 52
-                color: Qt.alpha(QuickshellColors.on_primary_container, 0.5)
-                visible: media.activePlayer === null || (media.activePlayer.trackArtUrl ?? "").length === 0
-            }
+            Column {
+                width: parent.width
+                spacing: 8
 
-            Rectangle {
-                anchors.fill: parent
-                color: Qt.alpha(QuickshellColors.surface, media.isPlaying ? 0 : 0.32)
+                Row {
+                    width: parent.width
+                    spacing: 8
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: Constants.animDuration
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Audio.muted
+                            ? "󰝟"
+                            : Audio.volume < 0.35
+                                ? "󰕿"
+                                : Audio.volume < 0.7
+                                    ? "󰖀"
+                                    : "󰕾"
+                        font.pixelSize: Constants.iconSize
+                        color: Audio.muted
+                            ? QuickshellColors.on_surface_variant
+                            : QuickshellColors.primary
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Constants.animDuration
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Audio.toggleMute()
+                        }
+                    }
+
+                    Slider {
+                        width: parent.width - 32
+                        value: Audio.volume
+                        onMoved: v => Audio.setVolume(v)
+                        opacity: Audio.muted ? 0.4 : 1.0
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: Constants.animDuration
+                            }
+                        }
                     }
                 }
 
                 Text {
-                    anchors.centerIn: parent
-                    text: "⏸"
-                    font.pixelSize: 32
-                    color: QuickshellColors.on_surface
-                    opacity: media.isPlaying ? 0 : 0.7
+                    width: parent.width
+                    text: Audio.sinkName.length > 0
+                        ? "󰓃  " + Audio.sinkName
+                        : "No output device"
+                    font.pixelSize: Constants.fontSizeXs
+                    color: QuickshellColors.on_surface_variant
+                    elide: Text.ElideRight
+                }
+            }
+        }
 
-                    Behavior on opacity
-                    {
-                        NumberAnimation {
-                            duration: Constants.animDuration
-                       }
+        TrayCard {
+            visible: media.nowPlayingNode !== null
+
+            TrayLabel {
+                text: "Now Playing"
+            }
+
+            Column {
+                width: parent.width
+                spacing: 6
+
+                Row {
+                    width: parent.width
+                    spacing: 8
+
+                    Rectangle {
+                        width: 36
+                        height: 36
+                        radius: 8
+                        color: Qt.alpha(QuickshellColors.primary_container, 0.7)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "♫"
+                            font.pixelSize: 18
+                            color: QuickshellColors.on_primary_container
+                        }
                     }
-                }
-            }
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
+                    Column {
+                        spacing: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - 44
 
-                onClicked: {
-                    if (media.activePlayer !== null)
-                        media.activePlayer.togglePlaying()
-                }
-            }
-        }
+                        Text {
+                            width: parent.width
+                            text: {
+                                if (!media.nowPlayingNode)
+                                    return ""
+                                var t = media.nowPlayingNode.properties?.["media.title"] ?? ""
+                                return t.length > 0 ? t : (media.nowPlayingNode.properties?.["media.name"] ?? "Unknown")
+                            }
+                            font.pixelSize: Constants.fontSizeSm
+                            font.weight: Font.Medium
+                            color: QuickshellColors.on_surface
+                            elide: Text.ElideRight
+                        }
 
-        Column {
-            Layout.fillWidth: true
-            spacing: 3
+                        Text {
+                            width: parent.width
+                            text: media.nowPlayingNode?.properties?.["media.artist"] ?? ""
+                            font.pixelSize: Constants.fontSizeXs
+                            color: QuickshellColors.primary
+                            elide: Text.ElideRight
+                            visible: text.length > 0
+                        }
 
-            Text {
-                width: parent.width
-                text: media.activePlayer !== null
-                    ? (media.activePlayer.trackTitle || "Unknown Track")
-                    : "No media playing"
-                font.pixelSize: Constants.fontSizeMd
-                font.weight: Font.Bold
-                color: QuickshellColors.on_surface
-                elide: Text.ElideRight
-                maximumLineCount: 2
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            }
-
-            Text {
-                width: parent.width
-                text: media.activePlayer !== null
-                    ? (media.activePlayer.trackArtist || "")
-                    : ""
-                font.pixelSize: Constants.fontSizeSm
-                color: QuickshellColors.primary
-                elide: Text.ElideRight
-                visible: text.length > 0
-            }
-
-            Text {
-                width: parent.width
-                text: media.activePlayer !== null
-                    ? (media.activePlayer.trackAlbum || "")
-                    : ""
-                font.pixelSize: Constants.fontSizeXs
-                color: QuickshellColors.on_surface_variant
-                elide: Text.ElideRight
-                visible: text.length > 0
-            }
-        }
-
-        Column {
-            Layout.fillWidth: true
-            spacing: 4
-            visible: media.activePlayer !== null && (media.activePlayer.length ?? 0) > 0
-
-            Rectangle {
-                width: parent.width
-                height: 3
-                radius: 2
-                color: Qt.alpha(QuickshellColors.surface_variant, 0.8)
-
-                Rectangle {
-                    width: Math.max(radius * 2, parent.width * media.trackProgress)
-                    height: parent.height
-                    radius: parent.radius
-                    color: QuickshellColors.primary
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: Constants.animDurationSlow
-                            easing.type: Easing.OutCubic
+                        Text {
+                            width: parent.width
+                            text: media.nowPlayingNode?.properties?.["application.name"] ?? ""
+                            font.pixelSize: Constants.fontSizeXs
+                            color: QuickshellColors.on_surface_variant
+                            elide: Text.ElideRight
+                            visible: text.length > 0
                         }
                     }
                 }
             }
-
-            Item {
-                width: parent.width
-                height: posTime.implicitHeight
-
-                Text {
-                    id: posTime
-                    anchors.left: parent.left
-                    text: media.activePlayer !== null
-                        ? media.fmtTime(media.activePlayer.position)
-                        : "0:00"
-                    font.pixelSize: Constants.fontSizeXs
-                    color: QuickshellColors.on_surface_variant
-                }
-
-                Text {
-                    anchors.right: parent.right
-                    text: media.activePlayer !== null
-                        ? media.fmtTime(media.activePlayer.length)
-                        : "0:00"
-                    font.pixelSize: Constants.fontSizeXs
-                    color: QuickshellColors.on_surface_variant
-                }
-            }
         }
 
-        Row {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 28
+        TrayCard {
+            TrayLabel {
+                text: "Streams"
+            }
 
-            Repeater {
-                model: 3
+            Column {
+                width: parent.width
+                spacing: 4
 
-                delegate: Text {
-                    required property int index
+                Text {
+                    width: parent.width
+                    text: media.streamNodes.length === 0
+                        ? "No active audio streams"
+                        : media.streamNodes.length + " stream(s)"
+                    font.pixelSize: Constants.fontSizeXs
+                    color: QuickshellColors.on_surface_variant
+                }
 
-                    text: {
-                        if (index === 0)
-                            return "󰒮"
-                        if (index === 1)
-                            return media.isPlaying ? "󰏤" : "󰐊"
-                        return "󰒭"
-                    }
-                    font.pixelSize: index === 1 ? 30 : 22
+                Repeater {
+                    model: media.streamNodes
 
-                    property bool btnEnabled: {
-                        if (media.activePlayer === null)
-                            return false
-                        if (index === 0)
-                            return media.activePlayer.canGoPrevious
-                        if (index === 1)
-                            return true
-                        return media.activePlayer.canGoNext
-                    }
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: parent.width
+                        height: streamRow.implicitHeight + 12
+                        radius: 8
+                        color: Qt.alpha(QuickshellColors.surface_variant, 0.35)
 
-                    color: btnEnabled
-                        ? (index === 1
-                            ? QuickshellColors.primary
-                            : QuickshellColors.on_surface)
-                        : Qt.alpha(QuickshellColors.on_surface_variant, 0.28)
+                        Column {
+                            id: streamRow
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 10
+                            spacing: 4
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: Constants.animDuration
-                        }
-                    }
+                            Row {
+                                width: parent.width
+                                spacing: 6
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "󰓃"
+                                    font.pixelSize: 10
+                                    color: QuickshellColors.on_surface_variant
+                                }
 
-                        onClicked: {
-                            if (!parent.btnEnabled || media.activePlayer === null)
-                                return
-                            switch (parent.index) {
-                                case 0:
-                                    media.activePlayer.previous()
-                                    break
-                                case 1:
-                                    media.activePlayer.togglePlaying()
-                                    break
-                                case 2:
-                                    media.activePlayer.next()
-                                    break
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.properties?.["application.name"] ?? modelData.description ?? "Stream"
+                                    font.pixelSize: Constants.fontSizeXs
+                                    font.weight: Font.Medium
+                                    color: QuickshellColors.on_surface
+                                    elide: Text.ElideRight
+                                    width: parent.width - 60
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                    }
+                                }
+
+                                Item { width: 1; height: 1; Layout.fillWidth: true }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.audio?.muted ?? false
+                                        ? "󰝟"
+                                        : "󰕾"
+                                    font.pixelSize: 10
+                                    color: modelData.audio?.muted ?? false
+                                        ? QuickshellColors.error
+                                        : QuickshellColors.on_surface_variant
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (modelData.audio)
+                                                modelData.audio.muted = !modelData.audio.muted
+                                        }
+                                    }
+                                }
+                            }
+
+                            Slider {
+                                width: parent.width
+                                value: modelData.audio?.volume ?? 0
+                                accentColor: QuickshellColors.secondary
+                                opacity: modelData.audio?.muted ?? false ? 0.35 : 1.0
+                                onMoved: v => {
+                                    if (modelData.audio)
+                                        modelData.audio.volume = v
+                                }
+
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Constants.animDuration
+                                    }
+                                }
                             }
                         }
                     }

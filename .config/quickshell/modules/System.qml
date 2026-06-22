@@ -23,43 +23,11 @@ Item {
         }
     }
 
-    property real volume: 0.5
     property real brightness: 0.5
-    property string ssid: "…"
-    property string ipAddr: "…"
-    property bool wifiExpanded: false
-    property var networks: []
-    property string selectedSsid: ""
+    property var selectedAp: null
     property bool connecting: false
     property string connectStatus: ""
-
-    Process {
-        id: volRead
-        command: ["bash", "-c", "pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | grep -oP '\\d+(?=%)' | head -1"]
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-
-            onRead: line => {
-                var v = parseInt(line.trim())
-                if (!isNaN(v))
-                    system.volume = Math.max(0, Math.min(1, v / 100.0))
-            }
-        }
-
-        onExited: running = false
-    }
-
-    Process {
-        id: volWrite
-        onExited: running = false
-    }
-
-    function setVolume(v) {
-        volume = v
-        volWrite.command = ["bash", "-c", "pactl set-sink-volume @DEFAULT_SINK@ " + Math.round(v * 100) + "%"]
-        volWrite.running = true
-    }
+    property bool wifiExpanded: false
 
     Process {
         id: brightRead
@@ -89,77 +57,34 @@ Item {
         brightWrite.running = true
     }
 
-    Process {
-        id: netProc
-        command: ["bash", "-c", "echo \"$(iwgetid -r 2>/dev/null || nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2 || echo 'No WiFi'):" + "$(hostname -I 2>/dev/null | awk '{print $1}')\""]
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-
-            onRead: line => {
-                var p = line.trim().split(":")
-                system.ssid = p[0] || "Offline"
-                system.ipAddr = p[1] || ""
-            }
-        }
-
-        onExited: running = false
-    }
-
-    Process {
-        id: scanProc
-        command: ["bash", "-c", "nmcli -g SSID,SIGNAL dev wifi list 2>/dev/null | sort -t: -k2 -rn | head -15"]
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: line => {
-                var trimmed = line.trim()
-                if (trimmed.length === 0)
-                    return
-
-                var lastColon = trimmed.lastIndexOf(":")
-                if (lastColon < 0)
-                    return
-
-                var ssid = trimmed.slice(0, lastColon).replace(/\\:/g, ":")
-                var signal = parseInt(trimmed.slice(lastColon + 1))
-                if (ssid.length === 0)
-                    return
-
-                var nets = system.networks
-                for (var i = 0; i < nets.length; i++) {
-                    if (nets[i].ssid === ssid)
-                        return
-                }
-
-                nets.push({ ssid: ssid, signal: isNaN(signal) ? 0 : signal })
-                system.networks = nets.slice()
-            }
-        }
-
-        onExited: running = false
-    }
-    Process {
-        id: connectProc
-
-        onExited: code => {
-            running = false
-            system.connecting = false
-            if (code === 0) {
-                system.connectStatus = "Connected!"
-                system.wifiExpanded = false
-                netProc.running = true
-            } else
-                system.connectStatus = "Failed — check password"
-
-            statusClearTimer.restart()
-        }
-    }
-
     Timer {
         id: statusClearTimer
         interval: 3000
         onTriggered: system.connectStatus = ""
+    }
+
+    Connections {
+        target: Nmcli
+        function onConnectFinished(success, message) {
+            system.connecting = false
+            system.connectStatus = message
+            if (success)
+                system.wifiExpanded = false
+            statusClearTimer.restart()
+        }
+    }
+
+    function scanNetworks() {
+        Nmcli.scan()
+    }
+
+    function connectTo(ap, password) {
+        if (!ap)
+            return
+
+        system.connecting = true
+        system.connectStatus = "Connecting…"
+        Nmcli.connectTo(ap.ssid, password)
     }
 
     Timer {
@@ -167,27 +92,7 @@ Item {
         repeat: true
         running: system.shown
         triggeredOnStart: true
-
-        onTriggered: {
-            volRead.running = true
-            brightRead.running = true
-            netProc.running = true
-        }
-    }
-
-        function scanNetworks() {
-        system.networks = []
-        scanProc.running = true
-    }
-
-    function connectTo(ssid, password) {
-        system.connecting = true
-        system.connectStatus = "Connecting…"
-        var cmd = password.length > 0
-            ? "nmcli dev wifi connect " + JSON.stringify(ssid) + " password " + JSON.stringify(password) + " 2>&1"
-            : "nmcli dev wifi connect " + JSON.stringify(ssid) + " 2>&1"
-        connectProc.command = ["bash", "-c", cmd]
-        connectProc.running = true
+        onTriggered: brightRead.running = true
     }
 
     ColumnLayout {
@@ -213,21 +118,44 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: system.volume < 0.01
+                    text: Audio.muted
                         ? "󰝟"
-                        : system.volume < 0.4
+                        : Audio.volume < 0.4
                             ? "󰕿"
-                            : system.volume < 0.75
+                            : Audio.volume < 0.75
                                 ? "󰖀"
                                 : "󰕾"
                     font.pixelSize: Constants.iconSize
-                    color: QuickshellColors.primary
+                    color: Audio.muted
+                        ? QuickshellColors.on_surface_variant
+                        : QuickshellColors.primary
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Constants.animDuration
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Audio.toggleMute()
+                    }
                 }
 
                 Slider {
                     width: parent.width - 34
-                    value: system.volume
-                    onMoved: v => system.setVolume(v)
+                    value: Audio.volume
+                    onMoved: v => Audio.setVolume(v)
+                    opacity: Audio.muted
+                        ? 0.4
+                        : 1
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: Constants.animDuration
+                        }
+                    }
                 }
             }
         }
@@ -276,28 +204,44 @@ Item {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "󰤨"
+                        text: Nmcli.wifiEnabled
+                            ? (Nmcli.activeSsid.length > 0
+                                ? "󰤨"
+                                : "󰤫")
+                            : "󰤭"
                         font.pixelSize: Constants.iconSize
-                        color: QuickshellColors.secondary
+                        color: Nmcli.wifiEnabled && Nmcli.activeSsid.length > 0
+                            ? QuickshellColors.secondary
+                            : QuickshellColors.on_surface_variant
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Constants.animDuration
+                            }
+                        }
                     }
 
                     Column {
                         spacing: 2
                         anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width - 34 - 24
+                        width: parent.width - 68
 
                         Text {
-                            text: system.ssid
+                            text: !Nmcli.wifiHardwareEnabled
+                                ? "Airplane Mode"
+                                : !Nmcli.wifiEnabled
+                                    ? "Wi-Fi Off"
+                                    : (Nmcli.activeSsid.length > 0 ? Nmcli.activeSsid : "Not connected")
                             font.pixelSize: Constants.fontSizeSm
                             font.weight: Font.Medium
                             color: QuickshellColors.on_surface
                         }
 
                         Text {
-                            text: system.ipAddr
+                            text: "Networking"
                             font.pixelSize: Constants.fontSizeXs
                             color: QuickshellColors.on_surface_variant
-                            visible: system.ipAddr.length > 0
+                            visible: Nmcli.wifiHardwareEnabled && Nmcli.wifiEnabled
                         }
                     }
 
@@ -314,6 +258,7 @@ Item {
                             : "󰅂"
                         font.pixelSize: 14
                         color: QuickshellColors.on_surface_variant
+                        visible: Nmcli.wifiHardwareEnabled && Nmcli.wifiEnabled
 
                         MouseArea {
                             anchors.fill: parent
@@ -328,10 +273,114 @@ Item {
                     }
                 }
 
+                Row {
+                    width: parent.width
+                    spacing: 6
+
+                    Rectangle {
+                        width: (parent.width - 6) / 2
+                        height: 30
+                        radius: 8
+                        color: Nmcli.wifiEnabled
+                            ? Qt.alpha(QuickshellColors.secondary_container, 0.85)
+                            : Qt.alpha(QuickshellColors.surface_variant, 0.5)
+                        border.width: 1
+                        border.color: Nmcli.wifiEnabled
+                            ? Qt.alpha(QuickshellColors.secondary, 0.4)
+                            : Qt.alpha(QuickshellColors.outline, 0.25)
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 4
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "󰤨"
+                                font.pixelSize: 11
+                                color: Nmcli.wifiEnabled
+                                    ? QuickshellColors.on_secondary_container
+                                    : QuickshellColors.on_surface_variant
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Wi-Fi"
+                                font.pixelSize: Constants.fontSizeXs
+                                font.weight: Font.Medium
+                                color: Nmcli.wifiEnabled
+                                    ? QuickshellColors.on_secondary_container
+                                    : QuickshellColors.on_surface_variant
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            enabled: Nmcli.wifiHardwareEnabled
+                            onClicked: Nmcli.setWifiEnabled(!Nmcli.wifiEnabled)
+                        }
+                    }
+
+                    Rectangle {
+                        width: (parent.width - 6) / 2
+                        height: 30
+                        radius: 8
+                        color: !Nmcli.wifiHardwareEnabled
+                            ? Qt.alpha(QuickshellColors.error_container, 0.85)
+                            : Qt.alpha(QuickshellColors.surface_variant, 0.5)
+                        border.width: 1
+                        border.color: !Nmcli.wifiHardwareEnabled
+                            ? Qt.alpha(QuickshellColors.error, 0.4)
+                            : Qt.alpha(QuickshellColors.outline, 0.25)
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 4
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "󰀝"
+                                font.pixelSize: 11
+                                color: !Nmcli.wifiHardwareEnabled
+                                    ? QuickshellColors.on_error_container
+                                    : QuickshellColors.on_surface_variant
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Airplane"
+                                font.pixelSize: Constants.fontSizeXs
+                                font.weight: Font.Medium
+                                color: !Nmcli.wifiHardwareEnabled
+                                    ? QuickshellColors.on_error_container
+                                    : QuickshellColors.on_surface_variant
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Nmcli.setAirplaneMode(Nmcli.wifiHardwareEnabled)
+                        }
+                    }
+                }
+
                 Rectangle {
                     width: parent.width
-                    visible: system.wifiExpanded
-                    height: system.wifiExpanded
+                    visible: system.wifiExpanded && Nmcli.wifiHardwareEnabled && Nmcli.wifiEnabled
+                    height: visible
                         ? wifiDropContent.implicitHeight
                         : 0
                     color: "transparent"
@@ -348,28 +397,31 @@ Item {
                         id: wifiDropContent
                         width: parent.width
                         spacing: 4
-                        visible: system.wifiExpanded
 
                         Text {
                             width: parent.width
-                            text: system.networks.length === 0
+                            text: Nmcli.scanning
                                 ? "Scanning…"
-                                : system.networks.length + " network(s) found"
+                                : Nmcli.accessPoints.length === 0
+                                    ? "No networks found"
+                                    : Nmcli.accessPoints.length + " network(s) found"
                             font.pixelSize: Constants.fontSizeXs
                             color: QuickshellColors.on_surface_variant
                         }
 
                         Repeater {
-                            model: system.networks
+                            model: Nmcli.accessPoints
 
                             delegate: Rectangle {
                                 required property var modelData
                                 width: wifiDropContent.width
                                 height: 34
                                 radius: 8
-                                color: system.selectedSsid === modelData.ssid
+                                color: system.selectedAp?.ssid === modelData.ssid
                                     ? Qt.alpha(QuickshellColors.secondary_container, 0.8)
-                                    : Qt.alpha(QuickshellColors.surface_variant, 0.4)
+                                    : modelData.ssid === Nmcli.activeSsid
+                                        ? Qt.alpha(QuickshellColors.tertiary_container, 0.5)
+                                        : Qt.alpha(QuickshellColors.surface_variant, 0.4)
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -385,15 +437,15 @@ Item {
 
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: modelData.signal >= 75
+                                        text: modelData.strength >= 75
                                             ? "󰤨"
-                                            : modelData.signal >= 50
+                                            : modelData.strength >= 50
                                                 ? "󰤥"
-                                                : modelData.signal >= 25
+                                                : modelData.strength >= 25
                                                     ? "󰤢"
                                                     : "󰤟"
                                         font.pixelSize: 12
-                                        color: system.selectedSsid === modelData.ssid
+                                        color: system.selectedAp?.ssid === modelData.ssid
                                             ? QuickshellColors.on_secondary_container
                                             : QuickshellColors.on_surface_variant
                                     }
@@ -403,7 +455,7 @@ Item {
                                         text: modelData.ssid
                                         font.pixelSize: Constants.fontSizeXs
                                         font.weight: Font.Medium
-                                        color: system.selectedSsid === modelData.ssid
+                                        color: system.selectedAp?.ssid === modelData.ssid
                                             ? QuickshellColors.on_secondary_container
                                             : QuickshellColors.on_surface
                                         elide: Text.ElideRight
@@ -414,7 +466,7 @@ Item {
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: system.selectedSsid = modelData.ssid
+                                    onClicked: system.selectedAp = modelData
                                 }
                             }
                         }
@@ -422,8 +474,7 @@ Item {
                         Column {
                             width: parent.width
                             spacing: 6
-                            visible: system.selectedSsid.length > 0
-
+                            visible: system.selectedAp !== null
                             property bool showPass: false
 
                             Rectangle {
@@ -479,7 +530,7 @@ Item {
                                                 visible: parent.text.length === 0 && !parent.activeFocus
                                             }
 
-                                            Keys.onReturnPressed: system.connectTo(system.selectedSsid, text)
+                                            Keys.onReturnPressed: system.connectTo(system.selectedAp, text)
                                         }
                                     }
 
@@ -494,7 +545,6 @@ Item {
                                         MouseArea {
                                             anchors.fill: parent
                                             cursorShape: Qt.PointingHandCursor
-
                                             onClicked: {
                                                 var col = parent.parent.parent.parent
                                                 col.showPass = !col.showPass
@@ -518,7 +568,7 @@ Item {
                                     anchors.centerIn: parent
                                     text: system.connecting
                                         ? "Connecting…"
-                                        : "Connect to " + system.selectedSsid
+                                        : "Connect to " + (system.selectedAp?.ssid ?? "")
                                     font.pixelSize: Constants.fontSizeXs
                                     font.weight: Font.Medium
                                     color: system.connecting
@@ -533,7 +583,7 @@ Item {
                                     anchors.fill: parent
                                     cursorShape: system.connecting ? Qt.ArrowCursor : Qt.PointingHandCursor
                                     enabled: !system.connecting
-                                    onClicked: system.connectTo(system.selectedSsid, passInput.text)
+                                    onClicked: system.connectTo(system.selectedAp, passInput.text)
                                 }
                             }
 
@@ -557,7 +607,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "󰑐  Refresh"
+                                text: Nmcli.scanning ? "󰑐  Scanning…" : "󰑐  Refresh"
                                 font.pixelSize: Constants.fontSizeXs
                                 color: QuickshellColors.on_surface_variant
                             }

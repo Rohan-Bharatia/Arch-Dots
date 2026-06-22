@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 
 import "../config"
+import "../tools"
 
 PanelWindow {
     id: popup

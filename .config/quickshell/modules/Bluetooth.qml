@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Io
+import Quickshell.Bluetooth
 
 import "../config"
 import "../tools"
@@ -24,159 +26,61 @@ Item {
     }
 
     property bool powered: false
-    property bool scanning: false
-    property var devices: []
-    property string statusMsg: ""
-    property string connectingAddr: ""
 
     Process {
-        id: btPowerRead
-        command: ["bash", "-c", "bluetoothctl show 2>/dev/null | grep -i 'powered:' | awk '{print $2}'"]
+        id: powerPollProc
+        command: ["bash", "-c", "bluetoothctl show 2>/dev/null | grep -i 'Powered:' | awk '{print $2}'"]
 
         stdout: SplitParser {
             splitMarker: "\n"
             onRead: line => {
-                bluetooth.powered = line.trim().toLowerCase() === "yes"
+                bluetooth.powered = line.trim() === "yes"
             }
         }
 
         onExited: running = false
     }
 
+    Timer {
+        interval: 2000
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: powerPollProc.running = true
+    }
+
     Process {
-        id: btPowerWrite
-        onExited: running = false
+        id: powerSetProc
+
+        onExited: {
+            running = false
+            powerPollProc.running = true
+        }
     }
 
     function setPower(on) {
-        btPowerWrite.command = ["bash", "-c", "bluetoothctl power " + (on ? "on" : "off") + " 2>/dev/null"]
-        btPowerWrite.running = true
-        Qt.callLater(function() { btPowerRead.running = true })
+        powerSetProc.command = ["bluetoothctl", "power", on ? "on" : "off"]
+        powerSetProc.running = true
     }
 
-    Process {
-        id: btScanProc
-        command: ["bash", "-c", "bluetoothctl devices 2>/dev/null | head -20"]
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: line => {
-                var trimmed = line.trim()
-                if (trimmed.length === 0)
-                    return
-
-                var parts = trimmed.split(" ")
-                if (parts.length < 3)
-                    return
-
-                var addr = parts[1]
-                var name = parts.slice(2).join(" ")
-                var devs = bluetooth.devices
-                for (var i = 0; i < devs.length; i++) {
-                    if (devs[i].addr === addr)
-                        return
-                }
-
-                devs.push({ addr: addr, name: name, connected: false })
-                bluetooth.devices = devs.slice()
-            }
-        }
-
-        onExited: running = false
-    }
+    property bool scanning: false
 
     Process {
-        id: btConnectedProc
-        command: ["bash", "-c", "bluetoothctl devices Connected 2>/dev/null"]
+        id: scanProc
+        command: ["bash", "-c", "bluetoothctl scan on & sleep 15; bluetoothctl scan off; wait"]
 
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: line => {
-                var trimmed = line.trim()
-                if (trimmed.length === 0)
-                    return
-
-                var parts = trimmed.split(" ")
-                if (parts.length < 2)
-                    return
-
-                var addr = parts[1]
-                var devs = bluetooth.devices
-                for (var i = 0; i < devs.length; i++) {
-                    if (devs[i].addr === addr)
-                        devs[i] = { addr: devs[i].addr, name: devs[i].name, connected: true }
-                }
-
-                bluetooth.devices = devs.slice()
-            }
-        }
-
-        onExited: running = false
-    }
-
-    Process {
-        id: btActionProc
-        onExited: code => {
+        onExited: {
+            bluetooth.scanning = false
             running = false
-            bluetooth.connectingAddr = ""
-
-            if (code === 0)
-                bluetooth.statusMsg = "Done"
-            else
-                bluetooth.statusMsg = "Failed"
-
-            statusClearTimer.restart()
-            btConnectedProc.running = true
         }
     }
 
-    Timer {
-        id: statusClearTimer
-        interval: 3000
-        onTriggered: bluetooth.statusMsg = ""
-    }
+    function startScan() {
+        if (bluetooth.scanning)
+            return
 
-    function scanDevices() {
-        bluetooth.devices = []
         bluetooth.scanning = true
-        btScanProc.running = true
-        btConnectedProc.running = true
-        scanTimer.restart()
-    }
-
-    Timer {
-        id: scanTimer
-        interval: 1500
-        onTriggered: bluetooth.scanning = false
-    }
-
-    function connectDevice(addr) {
-        bluetooth.connectingAddr = addr
-        bluetooth.statusMsg = "Connecting…"
-        btActionProc.command = ["bash", "-c", "bluetoothctl connect " + addr + " 2>/dev/null"]
-        btActionProc.running = true
-    }
-
-    function disconnectDevice(addr) {
-        bluetooth.connectingAddr = addr
-        bluetooth.statusMsg = "Disconnecting…"
-        btActionProc.command = ["bash", "-c", "bluetoothctl disconnect " + addr + " 2>/dev/null"]
-        btActionProc.running = true
-    }
-
-    Timer {
-        interval: 8000
-        repeat: true
-        running: bluetooth.shown
-        triggeredOnStart: true
-
-        onTriggered: {
-            btPowerRead.running = true
-            if (bluetooth.powered) {
-                btScanProc.running = true
-                btConnectedProc.running = true
-            }
-        }
+        scanProc.running = true
     }
 
     ColumnLayout {
@@ -202,19 +106,42 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: bluetooth.powered ? "󰂯" : "󰂲"
+                    text: bluetooth.powered
+                        ? "󰂯"
+                        : "󰂲"
                     font.pixelSize: Constants.iconSize
                     color: bluetooth.powered
                         ? QuickshellColors.primary
                         : QuickshellColors.on_surface_variant
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Constants.animDuration
+                        }
+                    }
                 }
 
-                Text {
+                Column {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: bluetooth.powered ? "Enabled" : "Disabled"
-                    font.pixelSize: Constants.fontSizeSm
-                    font.weight: Font.Medium
-                    color: QuickshellColors.on_surface
+                    spacing: 1
+
+                    Text {
+                        text: bluetooth.powered
+                            ? "Enabled"
+                            : "Disabled"
+                        font.pixelSize: Constants.fontSizeSm
+                        font.weight: Font.Medium
+                        color: QuickshellColors.on_surface
+                    }
+
+                    Text {
+                        text: bluetooth.scanning
+                            ? "Scanning…"
+                            : Bluetooth.defaultAdapter?.name ?? ""
+                        font.pixelSize: Constants.fontSizeXs
+                        color: QuickshellColors.on_surface_variant
+                        visible: bluetooth.powered
+                    }
                 }
 
                 Item {
@@ -243,7 +170,9 @@ Item {
                     }
 
                     Rectangle {
-                        x: bluetooth.powered ? parent.width - width - 4 : 4
+                        x: bluetooth.powered
+                            ? parent.width - width - 4
+                            : 4
                         anchors.verticalCenter: parent.verticalCenter
                         width: 16
                         height: 16
@@ -288,22 +217,21 @@ Item {
 
                 Text {
                     width: parent.width
-                    text: bluetooth.scanning
-                        ? "Scanning…"
-                        : bluetooth.devices.length === 0
-                            ? "No paired devices"
-                            : bluetooth.devices.length + " device(s)"
+                    text: Bluetooth.devices.length === 0
+                        ? "No known devices"
+                        : Bluetooth.devices.length + " device(s)"
                     font.pixelSize: Constants.fontSizeXs
                     color: QuickshellColors.on_surface_variant
                 }
 
                 Repeater {
-                    model: bluetooth.devices
+                    model: Bluetooth.devices
 
                     delegate: Rectangle {
-                        required property var modelData
+                        required property BluetoothDevice modelData
+
                         width: parent.width
-                        height: 36
+                        height: 38
                         radius: 8
                         color: modelData.connected
                             ? Qt.alpha(QuickshellColors.secondary_container, 0.8)
@@ -323,25 +251,37 @@ Item {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: modelData.connected
-                                    ? "󰂱"
-                                    : "󰂯"
-                                font.pixelSize: 13
+                                text: modelData.connected ? "󰂱" : "󰂯"
+                                font.pixelSize: 14
                                 color: modelData.connected
                                     ? QuickshellColors.on_secondary_container
                                     : QuickshellColors.on_surface_variant
                             }
 
-                            Text {
+                            Column {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: modelData.name
-                                font.pixelSize: Constants.fontSizeXs
-                                font.weight: Font.Medium
-                                color: modelData.connected
-                                    ? QuickshellColors.on_secondary_container
-                                    : QuickshellColors.on_surface
-                                elide: Text.ElideRight
-                                width: parent.width - 80
+                                spacing: 1
+                                width: parent.width - 60
+
+                                Text {
+                                    text: modelData.name
+                                    font.pixelSize: Constants.fontSizeXs
+                                    font.weight: Font.Medium
+                                    color: modelData.connected
+                                        ? QuickshellColors.on_secondary_container
+                                        : QuickshellColors.on_surface
+                                    elide: Text.ElideRight
+                                    width: parent.width
+                                }
+
+                                Text {
+                                    visible: modelData.batteryAvailable
+                                    text: "Battery: " + (modelData.battery ?? 0) + "%"
+                                    font.pixelSize: 7
+                                    color: modelData.connected
+                                        ? Qt.alpha(QuickshellColors.on_secondary_container, 0.7)
+                                        : QuickshellColors.on_surface_variant
+                                }
                             }
 
                             Item {
@@ -352,61 +292,51 @@ Item {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: bluetooth.connectingAddr === modelData.addr
-                                    ? "…"
-                                    : modelData.connected
-                                        ? "󰅁"
-                                        : "󰅂"
-                                font.pixelSize: 11
-                                color: QuickshellColors.on_surface_variant
+                                text: modelData.connected ? "󰅁" : "󰅂"
+                                font.pixelSize: 12
+                                color: modelData.connected
+                                    ? QuickshellColors.on_secondary_container
+                                    : QuickshellColors.on_surface_variant
 
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
-                                    enabled: bluetooth.connectingAddr === ""
-
-                                    onClicked: {
-                                        if (modelData.connected)
-                                            bluetooth.disconnectDevice(modelData.addr)
-                                        else
-                                            bluetooth.connectDevice(modelData.addr)
-                                    }
+                                    onClicked: modelData.connected = !modelData.connected
                                 }
                             }
                         }
                     }
                 }
 
-                Text {
-                    width: parent.width
-                    text: bluetooth.statusMsg
-                    font.pixelSize: Constants.fontSizeXs
-                    color: bluetooth.statusMsg === "Done"
-                        ? QuickshellColors.secondary
-                        : bluetooth.statusMsg === ""
-                            ? "transparent"
-                            : QuickshellColors.error
-                    horizontalAlignment: Text.AlignHCenter
-                    visible: bluetooth.statusMsg.length > 0
-                }
-
                 Rectangle {
                     width: parent.width
                     height: 30
                     radius: 8
-                    color: Qt.alpha(QuickshellColors.surface_variant, 0.4)
+                    color: bluetooth.scanning
+                        ? Qt.alpha(QuickshellColors.primary_container, 0.6)
+                        : Qt.alpha(QuickshellColors.surface_variant, 0.4)
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
 
                     Text {
                         anchors.centerIn: parent
-                        text: "󰑐  Refresh"
+                        text: bluetooth.scanning
+                            ? "󰑐  Scanning…"
+                            : "󰑐  Scan"
                         font.pixelSize: Constants.fontSizeXs
-                        color: QuickshellColors.on_surface_variant
+                        color: bluetooth.scanning
+                            ? QuickshellColors.on_primary_container
+                            : QuickshellColors.on_surface_variant
                     }
 
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: bluetooth.scanDevices()
+                        onClicked: bluetooth.startScan()
                     }
                 }
             }

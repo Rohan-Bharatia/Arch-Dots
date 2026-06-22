@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import Quickshell.Services.UPower
 
 import "../config"
 import "../tools"
@@ -21,11 +22,15 @@ Item {
         }
     }
 
-    property string powerProfile: "balanced"
-    property int  batteryPct: 100
-    property bool batteryCharging: false
-    property string batteryIcon: {
-        if (batteryCharging)
+    readonly property var device: UPower.displayDevice
+    readonly property int batteryPct: {
+        var p = device?.percentage ?? 0
+        return Math.round(p > 1 ? p : p * 100)
+    }
+    readonly property bool batteryCharging: device?.state === UPowerDeviceState.Charging
+    readonly property bool batteryFull: device?.state === UPowerDeviceState.FullyCharged
+    readonly property string batteryIcon: {
+        if (batteryCharging || batteryFull)
             return "󰂄"
         if (batteryPct >= 90)
             return "󰁹"
@@ -39,32 +44,24 @@ Item {
             return "󰁺"
         return "󰂃"
     }
-
-    Process {
-        id: batProc
-        command: ["bash", "-c", "echo $(cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -1)" + ":$(cat /sys/class/power_supply/BAT*/status 2>/dev/null | head -1)"]
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: line => {
-                var p = line.trim().split(":")
-                var pct = parseInt(p[0])
-                if (!isNaN(pct))
-                    battery.batteryPct = pct
-                if (p.length > 1)
-                    battery.batteryCharging = p[1].trim() === "Charging"
-            }
-        }
-
-        onExited: running = false
+    readonly property color batColor: {
+        if (batteryCharging || batteryFull)
+            return QuickshellColors.secondary
+        if (batteryPct >= 50)
+            return QuickshellColors.secondary
+        if (batteryPct >= 20)
+            return QuickshellColors.tertiary
+        return QuickshellColors.error
     }
+    property string powerProfile: "balanced"
 
-    Timer {
-        interval: 30000
-        repeat: true
-        running: true
-        triggeredOnStart: true
-        onTriggered: batProc.running = true
+    function fmtTime(secs) {
+        if (!secs || secs <= 0) return ""
+        var h = Math.floor(secs / 3600)
+        var m = Math.floor((secs % 3600) / 60)
+        if (h > 0)
+            return h + "h " + m + "m"
+        return m + "m"
     }
 
     Process {
@@ -100,16 +97,6 @@ Item {
         running: battery.shown
         triggeredOnStart: true
         onTriggered: profileRead.running = true
-    }
-
-    property color batColor: {
-        if (battery.batteryCharging)
-            return QuickshellColors.secondary
-        if (battery.batteryPct >= 50)
-            return QuickshellColors.secondary
-        if (battery.batteryPct >= 20)
-            return QuickshellColors.tertiary
-        return QuickshellColors.error
     }
 
     ColumnLayout {
@@ -166,7 +153,15 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: battery.batteryCharging ? "Charging" : "Discharging"
+                    text: battery.batteryFull
+                        ? "Full"
+                        : battery.batteryCharging
+                            ? "Charging" + (battery.fmtTime(battery.device?.timeToFull ?? 0).length > 0
+                                ? " · " + battery.fmtTime(battery.device.timeToFull)
+                                : "")
+                            : "Discharging" + (battery.fmtTime(battery.device?.timeToEmpty ?? 0).length > 0
+                                ? " · " + battery.fmtTime(battery.device.timeToEmpty)
+                                : "")
                     font.pixelSize: Constants.fontSizeSm
                     color: QuickshellColors.on_surface_variant
                 }
@@ -197,6 +192,18 @@ Item {
                             }
                         }
                     }
+                }
+
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: {
+                        var rate = battery.device?.changeRate ?? 0
+                        if (Math.abs(rate) < 0.1) return ""
+                        return (rate > 0 ? "+" : "") + rate.toFixed(1) + " W"
+                    }
+                    font.pixelSize: Constants.fontSizeXs
+                    color: QuickshellColors.on_surface_variant
+                    visible: text.length > 0
                 }
             }
         }
@@ -266,11 +273,11 @@ Item {
                                         ? QuickshellColors.primary
                                         : QuickshellColors.on_surface_variant
 
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: Constants.animDuration
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: Constants.animDuration
+                                            }
                                         }
-                                    }
                                 }
 
                                 Text {
