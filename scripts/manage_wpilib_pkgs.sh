@@ -15,7 +15,7 @@ CHOR_URL="https://github.com/SleipnirGroup/Choreo/releases/download/v2026.0.3/Ch
 CHOR_ZIP="$HOME/Choreo-v2026.0.3-Linux-x86_64-standalone.zip"
 CHOR_DIR="$HOME/Choreo-v2026.0.3-Linux-x86_64-standalone"
 CHOR_ICON_URL="https://raw.githubusercontent.com/SleipnirGroup/Choreo/refs/heads/main/src-tauri/icons/128x128.png"
-CHOR_ICON="/usr/share/frc/choreo.png"
+CHOR_ICON="/usr/share/icons/frc/choreo.png"
 curl -L "$CHOR_URL" -o "$CHOR_ZIP"
 sudo curl -L "$CHOR_ICON_URL" -o "$CHOR_ICON"
 mkdir -p "$CHOR_DIR"
