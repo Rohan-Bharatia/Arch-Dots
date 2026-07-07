@@ -35,5 +35,6 @@ export __GL_VRR_ALLOWED=1
 export __GL_SHADER_DISK_CACHE=1
 export __GL_SHADER_DISK_CACHE_PATH=$HOME/.cache/nv/
 export WLR_NO_HARDWARE_CURSORS=1
+export WLR_DRM_DEVICES=/dev/dri/card1
 export LIBVIRT_DEFAULT_URI='qemu:///system'
 export __NV_PRIME_RENDERER_OFFLOAD=1

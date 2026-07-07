@@ -28,6 +28,8 @@ ollama run hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M
 yabridgectl add ~/.wine/drive_c
 yabridgectl sync
 
+# TODO: Ensure `/etc/fuse.conf` has `user_allow_other` enabled
+
 rclone config
 
 warp-cli registration new
