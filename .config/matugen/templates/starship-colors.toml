@@ -1,46 +1,276 @@
-format = '''
-$directory$git_branch$rust$python
-$character'''
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[╭╴](fg:{{colors.outline.default.hex}})\
+$os\
+$shell\
+$username\
+$hostname\
+$sudo\
+$directory\
+$direnv\
+$php\
+$python\
+$git_branch$git_commit$git_state$git_metrics$git_status\
+[ ](fg:{{colors.surface_container_low.default.hex}})\
+$fill\
+$fill\
+[ ](fg:{{colors.surface_container_low.default.hex}})\
+$status\
+$jobs\
+$memory_usage\
+$cmd_duration\
+$battery\
+$time\
+$line_break\
+\
+[╰╴](fg:{{colors.outline.default.hex}})\
+[$character]($style)"""
+
+# move the rest of the prompt to the right
+right_format = """
+[$localip]($style)"""
+
+# Inserts a blank line between shell prompts:
+add_newline = true
 
 palette = 'colors'
 
 [palettes.colors]
-mustard = '#af8700' # example
 color1 = '{{colors.primary_fixed_dim.default.hex}}'
 color2 = '{{colors.on_primary.default.hex}}'
 color3 = '{{colors.on_surface_variant.default.hex}}'
 color4 = '{{colors.surface_container.default.hex}}'
-color5 = '{{colors.on_primary.default.hex}}'
+color5 = '{{colors.on_primary_container.default.hex}}'
 color6 = '{{colors.surface_dim.default.hex}}'
 color7 = '{{colors.surface.default.hex}}'
 color8 = '{{colors.primary.default.hex}}'
 color9 = '{{colors.tertiary.default.hex}}'
+color10 = '{{colors.surface_container_low.default.hex}}'
+color11 = '{{colors.outline.default.hex}}'
+color12 = '{{colors.outline_variant.default.hex}}'
+color13 = '{{colors.on_surface.default.hex}}'
+color14 = '{{colors.error.default.hex}}'
+color15 = '{{colors.error_container.default.hex}}'
+color16 = '{{colors.secondary.default.hex}}'
+green = '{{colors.tertiary_fixed.default.hex}}'
+red = '{{colors.error.default.hex}}'
+yellow = '{{colors.tertiary.default.hex}}'
+cyan = '{{colors.secondary.default.hex}}'
+blue = '{{colors.primary.default.hex}}'
+purple = '{{colors.tertiary_container.default.hex}}'
+orange = '{{colors.error_container.default.hex}}'
 
-# Prompt symbols
-[character]
-success_symbol = "[🞈](color9 bold)"
-error_symbol = "[🞈](@{error})"
-vicmd_symbol = "[🞈](#f9e2af)"
+# Customization and activation of some modules:
+# Listed in the order of their position in the module row above
+[os]
+format = "[](fg:color10)[$symbol]($style)(bg:color10)"
+style = "fg:color13 bg:color10"
+disabled = false
+
+[os.symbols]
+AIX = "AIX "
+Alpaquita = "\uf26a " # \uf26a  # \ue3a5\ue390 
+AlmaLinux = "\uf31d " # 
+Alpine = "\uf300 " # ""
+Amazon = "\uf270 " # ""
+Android = "\ue70e " # ""
+Arch = "\uf303 " # ""
+Artix = "\uf31f " # 
+CentOS = "\uf304 " # ""
+Debian = "\uf306 " # ""
+DragonFly = "\ueef8 " #    🐉
+Emscripten = "\u26A1 " # ⚡
+EndeavourOS = "\uf322 " # "" # 
+Fedora = "\uf30a " # ""
+FreeBSD = "\uf30c " # ""
+Garuda = "\uf337 " # ""
+Gentoo = "\uf30d " # ""
+HardenedBSD = "\uf132 " # 
+Illumos = "\uf326 " # "🐦"
+Kali = "\uf327 " # 
+Linux = "\uf17c " # ""
+Mabox = "\uf1b2 " #  📦
+Macos = "\uf302 " # ""
+Manjaro = "\uf312 " # ""
+Mariner = "\ue7ae " # \ue7ae 
+MidnightBSD = "\ue3e0 " # 🌘
+Mint = "\uf30e " # ""
+NetBSD = "\u2691 " # ⚑
+NixOS = "\uf313 " # ""
+OpenBSD = "\uf328 " # ""
+OpenCloudOS = "\uf0c2 " # 
+openEuler = "\u2208 " # \u2208 ∈
+openSUSE = "\uf314 " # ""
+OracleLinux = "\u213A " # \u213A ℺ # ⊂⊃ \u2282\u2283
+Pop = "\uf32a " # ""
+Raspbian = "\uf315 " # ""
+Redhat = "\uf316 " # "" # 󱄛
+RedHatEnterprise = "\uf316 " # "" # 󱄛
+RockyLinux = "\uf32b " # 
+Redox = "\uf331 " #   󰺕
+Solus = "\uf32d " # "" # " "
+SUSE = "\uef6d " # ""
+Ubuntu = "\uf31b " # ""
+Ultramarine = "󱙳 " # 🔷
+Unknown = "\uf108 " # ""
+Void = "\uf32e " #  
+Windows = "\uf17a " # ""
+
+[shell]
+format = '[$indicator]($style)()'
+style = 'fg:color12 bg:color10'
+# empty indicator (''): e.g. if you do not want to see indicator for your standard shell
+zsh_indicator = '%_ ' # '%_ ' '󰰶 '
+bash_indicator = '\$_ ' # "\uebca " ' ' '\$_ '
+fish_indicator = '>> ' # "\uee41 " '󰈺 ' '>>_ '
+powershell_indicator = '>_ ' # "\uebc7 " ' ' '>_'
+unknown_indicator = '?_ ' # '?_ ' ' '
+disabled = true # set to false if you want to see the shell indicator
+
+[username]
+format = '[ ](fg:green bold bg:color10)[$user]($style)[ ](bg:color10)'
+style_user = 'fg:green bold bg:color10'
+style_root = 'fg:red bold bg:color10'
+show_always = false
+disabled = false
+
+[hostname]
+format = '[$ssh_symbol ](fg:green bold bg:color10)[$hostname](fg:green bold bg:color10)[ ](bg:color10)'
+ssh_only = true
+ssh_symbol = '' # '⇒' # ' ' # 'ﬁ⇒'
+#trim_at = '.companyname.com'
+disabled = false
+
+[sudo]
+format = '[ ](fg:red bold bg:color10)[ $symbol]($style)'
+style = 'fg:red bold bg:color10'
+symbol = ' ' # ' ❯ '
+disabled = false
 
 [directory]
-format = "[](fg:color1 bg:color4)[󰉋](bg:color1 fg:color2)[ ](fg:color1 bg:color4)[$path ](fg:color3 bg:color4)[ ](fg:color4)"
-
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-
-[git_branch]
-format = "[](fg:color8 bg:color4)[ ](bg:color8 fg:color5)[](fg:color8 bg:color4)[(bg:color8 fg:color5) $branch](fg:color3 bg:color4)[](fg:color4) "
-
-[time]
-format = "[](fg:color8 bg:color4)[ ](bg:color8 fg:color5)[](fg:color8 bg:color4)[(bg:color8 fg:color5) $time](fg:color3 bg:color4)[](fg:color4) "
+format = '[ ](fg:cyan bold bg:color10)[$read_only]($read_only_style)[$repo_root]($repo_root_style)[$path ]($style)'
+style = 'fg:cyan bold bg:color10'
+home_symbol = ' ~'
+read_only = ' ' # ' ' # ' ''
+read_only_style = 'fg:cyan bg:color10'
+truncation_length = 3
+truncation_symbol = '…/'
+truncate_to_repo = true
+repo_root_format = '[ ](fg:cyan bold bg:color10)[$read_only]($read_only_style)[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path ]($style)'
+repo_root_style = 'fg:cyan bold bg:color10'
+use_os_path_sep = true
 disabled = false
-time_format = "%R" # Hour:Minute Format
+
+[direnv]
+symbol = 'direnv'
+style = 'fg:color11 bold bg:color10'
+format = "[❯ $symbol $loaded/$allowed ]($style)"
+allowed_msg = 'a' # 'ok' # '✓'
+not_allowed_msg = '!a' # 'nok' # '!'
+denied_msg = 'x' # '✘'
+loaded_msg = '+' # "\ueabc" # \ueabc  # '->' # 'yo' # '󰗡' # \udb81\udde1 # '󱥸✓' # '󱥸✓' # 
+unloaded_msg = '-' # "\ueabc!" # \ueabc ! # '->!' # 'no' # '󰅚' # '󱥸!' \udb86\udd78
+disabled = false
+
+[php]
+format = "[[ \u3009](fg:color16 bg:color10)[$symbol](fg:color16 italic bg:color10)($version )]($style)"
+style = 'fg:color16 bg:color10)'
+symbol = "php " # \ue73d  # 󰌟
 
 [python]
-format = "[](fg:color8 bg:color4)[${symbol}${version}](bg:color8 fg:color5)[](fg:color8 bg:color4)[(bg:color8 fg:color5)( ${virtualenv})](fg:color3 bg:color4)[](fg:color4) "
-symbol = '🐍'
-# pyenv_version_name = true
-pyenv_prefix = 'venv'
+format = "[\u3009${symbol}${pyenv_prefix}(${version} )(($virtualenv) )]($style)"
+style = 'fg:yellow bg:color10'
+symbol = "\ue73c " # 
+pyenv_version_name = true
+
+[git_branch]
+format = '[❯ $symbol $branch(:$remote_branch)]($style)[ ](bg:color10)'
+style = 'fg:color14 bg:color10'
+symbol = ''
+#ignore_branches = ['master', 'main']
+
+[git_commit]
+format = '[\($hash$tag\)]($style)[ ](bg:color10)'
+style = 'fg:color14 bg:color10'
+commit_hash_length = 8
+tag_symbol = '  ' # '  ''
+tag_disabled = false
+disabled = false
+
+[git_metrics]
+format = '[\[+$added/]($added_style)[-$deleted\]]($deleted_style)[ ](bg:color10)'
+added_style = 'fg:color14 bg:color10'
+deleted_style = 'fg:color14 bg:color10'
+disabled = false
+
+[git_status]
+format = '([$all_status$ahead_behind]($style))'
+style = 'fg:color14 bg:color10'
+conflicted = '[${count} ](fg:red bg:color10)'
+ahead = '[⇡${count} ](fg:yellow bg:color10)'
+behind = '[⇣${count} ](fg:yellow bg:color10)'
+diverged = '[⇕${ahead_count}⇡${behind_count}⇣ ](fg:yellow bg:color10)' # ⇕ ↕ ⇳ 󰹹 󰹺 󰧈
+up_to_date = '[✓ ](fg:green bg:color10)'
+untracked = '[ﳇ${count} ](fg:red bg:color10)' # ' ' # '? '
+stashed = '[${count} ](fg:color15 bg:color10)' # '📦 '# ' ' # ' ' # ' ' # ' '
+modified = '[󰷉${count} ](fg:color9 bg:color10)' # '📝' # '! ' #  #  # 
+staged = '[${count} ](fg:green bg:color10)' # '+ '
+renamed = '[${count} ](fg:yellow bg:color10)' # ' ' # '﫦' # ᴂ #  #  #  # ﳳ
+deleted = '[﯊${count} ](fg:orange bg:color10)' # '🗑 ' '- '
+disabled = false
+
+[fill]
+style = 'fg:color11'
+symbol = "\u2500" # "\u2500" "─" # no line: ' '
+
+[status]
+format = '[$symbol $status $hex_status(  $signal_number-$signal_name)]($style)'
+style = 'fg:red bg:color10'
+symbol = ' ✘'
+disabled = false
+
+[jobs]
+format = "[ \ueab5 ](fg:blue bold bg:color10)[$symbol $number]($style)"
+style = 'fg:blue bg:color10'
+symbol = "\ueb7b" # \ueb7b  \uef0c 省 # '廒' # '󰜎' # ''
+symbol_threshold = 1
+number_threshold = 2
+disabled = false
+
+[memory_usage]
+format = "[ \ueab5 ](fg:purple bold bg:color10)[$symbol ${ram} ${swap}]($style)"
+style = 'fg:purple bg:color10'
+symbol = '﬙ 北' # '﬙ 痢' # '﬙ / 󰾵' # '󰍛 󰾵' # '﬙ 󰾴' # '﬙ 󰾶' # '﬙ 󰾷' '﬙ 󰣂'
+threshold = 75
+disabled = false
+
+[cmd_duration]
+format = "[ \ueab5 \uf017 $duration]($style)" # \ueab5 \uf017   
+style = 'fg:yellow bg:color10'
+min_time = 500
+disabled = false
+
+[battery]
+format = "[ \ueab5 $symbol$percentage]($style)"
+full_symbol = '󰁹 '
+charging_symbol = '󰂄 '
+discharging_symbol = '󰂃 '
+unknown_symbol = '󰁽? '
+empty_symbol = '󰂎 '
+disabled = true # set to 'false', if you want to see the battery status
+
+[[battery.display]]
+threshold = 100 # show always
+style = 'fg:color11 bg:color10'
+
+[time]
+format = "[ \ueab5 $time]($style)"
+style = 'fg:color11 bg:color10'
+disabled = true # set to 'false', if you want to see the time
+
+[localip]
+format = '[$localipv4](fg:green bold)'
+ssh_only = true
+disabled = false

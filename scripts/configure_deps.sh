@@ -21,6 +21,7 @@ spicetify config extensions keyboardShortcut.js
 spicetify config extensions shuffle+.js
 spicetify config extensions popupLyrics.js
 spicetify config extensions autoSkipVideo.js
+spicetify config custom_apps lyrics-plus
 spicetify apply -n
 
 ollama run hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q4_K_M

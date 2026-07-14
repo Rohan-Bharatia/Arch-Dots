@@ -85,3 +85,8 @@ post_hook = 'ln -nfs $HOME/.config/matugen/generated/starship-colors.toml $HOME/
 input_path = './templates/pywalfox-colors.json'
 output_path = './generated/pywalfox-colors.json'
 post_hook = 'ln -nfs $HOME/.config/matugen/generated/pywalfox-colors.json $HOME/.cache/wal/colors.json; pywalfox update || true'
+
+[templates.vesktop]
+input_path  = '~/.config/matugen/templates/midnight-discord.css'
+output_path = '~/.config/matugen/generated/midnight-discord.css'
+post_hook   = 'ln -nfs $HOME/.config/matugen/generated/midnight-discord.css $HOME/.config/vesktop/themes/midnight-discord.css'

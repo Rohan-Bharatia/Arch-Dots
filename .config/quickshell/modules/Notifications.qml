@@ -97,20 +97,29 @@ Item {
             model: Notifs.list
 
             delegate: Rectangle {
+                id: notifCard
                 required property var modelData
                 Layout.fillWidth: true
-                implicitHeight: cardContent.implicitHeight + 18
+                implicitHeight: cardCol.implicitHeight + 18
                 radius: Constants.radius - 4
                 color: modelData.urgency === NotificationUrgency.Critical
                     ? Qt.alpha(QuickshellColors.error_container, 0.82)
-                    : Qt.alpha(QuickshellColors.surface_container, 0.88)
+                    : mouseArea.containsMouse
+                        ? Qt.alpha(QuickshellColors.surface_container, 1)
+                        : Qt.alpha(QuickshellColors.surface_container, 0.88)
                 border.width: 1
                 border.color: modelData.urgency === NotificationUrgency.Critical
                     ? Qt.alpha(QuickshellColors.error, 0.32)
                     : Qt.alpha(QuickshellColors.outline, 0.2)
 
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Constants.animDuration
+                    }
+                }
+
                 Column {
-                    id: cardContent
+                    id: cardCol
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -155,6 +164,53 @@ Item {
                         elide: Text.ElideRight
                         visible: text.length > 0
                     }
+
+                    Row {
+                        spacing: 4
+                        visible: modelData.actions.length > 0
+
+                        Repeater {
+                            model: modelData.actions
+
+                            Rectangle {
+                                required property var modelData
+                                width: actionText.implicitWidth + 16
+                                height: 22
+                                radius: 8
+                                color: Qt.alpha(QuickshellColors.primary_container, 0.8)
+                                border.width: 1
+                                border.color: Qt.alpha(QuickshellColors.primary, 0.25)
+
+                                Text {
+                                    id: actionText
+                                    anchors.centerIn: parent
+                                    text: modelData.text || ""
+                                    font.pixelSize: 9
+                                    font.weight: Font.Medium
+                                    color: QuickshellColors.on_primary_container
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Notifs.invoke(notifCard.modelData, modelData)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: modelData.actions.length > 0
+                        ? Qt.PointingHandCursor
+                        : Qt.ArrowCursor
+                    onClicked: {
+                        if (modelData.actions.length > 0)
+                            Notifs.invoke(notifCard.modelData, modelData.actions[0])
+                    }
                 }
 
                 Text {
@@ -169,7 +225,7 @@ Item {
                         anchors.fill: parent
                         anchors.margins: -4
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Notifs.dismiss(modelData)
+                        onClicked: Notifs.dismiss(notifCard.modelData)
                     }
                 }
             }

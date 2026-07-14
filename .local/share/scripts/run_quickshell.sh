@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-qs kill || true
+pkill qs
 sleep 0.1
 qs &

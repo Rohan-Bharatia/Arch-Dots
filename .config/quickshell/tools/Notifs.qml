@@ -19,6 +19,7 @@ Singleton {
         imageSupported: true
 
         onNotification: notif => {
+            notif.tracked = true
             root.unreadCount++
             root.newNotification(notif)
         }
@@ -30,6 +31,12 @@ Singleton {
         notif.dismiss()
         if (root.unreadCount > 0)
             root.unreadCount--
+    }
+
+    function invoke(notif, action) {
+        action.invoke()
+        if (!notif.resident)
+            root.dismiss(notif)
     }
 
     function dismissAll() {
