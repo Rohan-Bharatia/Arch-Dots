@@ -17,7 +17,7 @@ post_hook = 'ln -nfs $HOME/.config/matugen/generated/kitty-colors.conf $HOME/.co
 [templates.quickshell]
 input_path = './templates/QuickshellColors.qml'
 output_path = './generated/QuickshellColors.qml'
-post_hook = 'quickshell kill || true; ln -nfs $HOME/.config/matugen/generated/QuickshellColors.qml $HOME/.config/quickshell/config/QuickshellColors.qml; quickshell &'
+post_hook = 'pkill qs || true; ln -nfs $HOME/.config/matugen/generated/QuickshellColors.qml $HOME/.config/quickshell/config/QuickshellColors.qml; qs &'
 
 [templates.gtk3]
 input_path = './templates/gtk-colors.css'
