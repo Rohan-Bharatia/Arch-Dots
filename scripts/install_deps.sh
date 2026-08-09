@@ -11,7 +11,7 @@ PACMAN_PKG_LIST=(base-devel git gcc kitty rofi swappy gtk3 gtk4 qt5ct qt6ct sway
                  unzip rustup uv clang ffmpeg wl-clipboard mbuffer less vesktop libpulse zsh \
                  zsh-completions zsh-syntax-highlighting seahorse networkmanager \
                  network-manager-applet blender kicad chromium eza expac polkit-gnome trash-cli \
-                 steam modrinth-app godot fuse2)
+                 steam modrinth-app godot fuse2 qpwgraph jack-example-tools)
 YAY_PKG_LIST=(mangowm nerd-fonts spotify spicetify zen-browser-bin cloudflare-warp-bin)
 
 sudo pacman -Syu --needed --noconfirm "${PACMAN_PKG_LIST[@]}"

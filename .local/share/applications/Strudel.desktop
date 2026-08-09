@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Strudel
+Comment=A free/open source live coding environment for algorithmic patterns.
+Exec=/bin/pw-jack /bin/chromium --app=https://strudel.cc/
+Type=Application
+Icon=chromium
+Categories=Audio;Video;AudioVideo;AudioVideoEditing;Recorder;
+Terminal=false
